@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina5_5" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MemoListSectionView"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" restorationIdentifier="MemoListSectionView" id="gPs-KR-oLG" customClass="MemoListSectionView" customModule="MemoCloneApp" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="48"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jwU-bY-F5i">
+                    <rect key="frame" x="0.0" y="0.0" width="414" height="48"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="메모" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vEf-hV-EM2">
+                            <rect key="frame" x="25" y="13.333333333333334" width="316" height="21.666666666666664"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QJM-sH-kN4">
+                            <rect key="frame" x="371" y="17.666666666666668" width="13" height="13"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="13" id="aC3-ne-BdR"/>
+                                <constraint firstAttribute="height" constant="13" id="hGF-MC-nuW"/>
+                            </constraints>
+                            <color key="tintColor" red="0.95432180170000003" green="0.71327698230000003" blue="0.119010739" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <state key="normal" image="downArrow"/>
+                            <connections>
+                                <action selector="handlFoldAndStretchButtonTap:" destination="gPs-KR-oLG" eventType="touchUpInside" id="Ae2-AX-tUz"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <viewLayoutGuide key="safeArea" id="sCj-ZU-n8X"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="sCj-ZU-n8X" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="vEf-hV-EM2" secondAttribute="bottom" id="FIp-Ja-UU8"/>
+                        <constraint firstItem="QJM-sH-kN4" firstAttribute="centerY" secondItem="jwU-bY-F5i" secondAttribute="centerY" id="agu-m7-eHZ"/>
+                        <constraint firstItem="vEf-hV-EM2" firstAttribute="centerY" secondItem="jwU-bY-F5i" secondAttribute="centerY" id="g0v-hc-ink"/>
+                        <constraint firstItem="sCj-ZU-n8X" firstAttribute="trailing" secondItem="QJM-sH-kN4" secondAttribute="trailing" constant="30" id="ltu-aq-1gZ"/>
+                        <constraint firstItem="QJM-sH-kN4" firstAttribute="leading" secondItem="vEf-hV-EM2" secondAttribute="trailing" constant="30" id="vO2-7F-BCZ"/>
+                        <constraint firstItem="vEf-hV-EM2" firstAttribute="leading" secondItem="sCj-ZU-n8X" secondAttribute="leading" constant="25" id="xys-vr-HSO"/>
+                        <constraint firstItem="vEf-hV-EM2" firstAttribute="top" relation="greaterThanOrEqual" secondItem="sCj-ZU-n8X" secondAttribute="top" id="yfa-7O-oOD"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="XGw-Np-s9N"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="jwU-bY-F5i" firstAttribute="top" secondItem="XGw-Np-s9N" secondAttribute="top" id="8bu-dO-eO9"/>
+                <constraint firstItem="XGw-Np-s9N" firstAttribute="bottom" secondItem="jwU-bY-F5i" secondAttribute="bottom" id="BOI-0h-zsk"/>
+                <constraint firstItem="jwU-bY-F5i" firstAttribute="leading" secondItem="XGw-Np-s9N" secondAttribute="leading" id="RW2-1L-LAu"/>
+                <constraint firstItem="XGw-Np-s9N" firstAttribute="trailing" secondItem="jwU-bY-F5i" secondAttribute="trailing" id="cdE-P9-fWW"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="sectionArrowButton" destination="QJM-sH-kN4" id="dsy-2s-Igi"/>
+                <outlet property="sectionTitleLabel" destination="vEf-hV-EM2" id="CC0-qB-C8Z"/>
+            </connections>
+            <point key="canvasLocation" x="-743.47826086956525" y="-659.51086956521749"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="downArrow" width="128" height="128"/>
+    </resources>
+</document>
