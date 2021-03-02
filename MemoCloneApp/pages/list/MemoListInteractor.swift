@@ -14,56 +14,61 @@ import UIKit
 import Firebase
 
 protocol MemoListBusinessLogic {
-  func requestMemoList()
+    func requestMemoList()
+    func deleteMemo(key: String?)
+    func changeMemoStatus(key: String?, isFixed: Bool)
 }
 
 protocol MemoListDataStore {
-  //var name: String { get set }
 }
 
 class MemoListInteractor: MemoListBusinessLogic, MemoListDataStore {
-  var presenter: MemoListPresentationLogic?
-  var worker: MemoListWorker?
-  //var name: String = ""
-  
-  // MARK: Do something
-  
+    var presenter: MemoListPresentationLogic?
+    var worker: MemoListWorker?
+    
+    // MARK: Do something
+    
     func requestMemoList() {
         guard let uid = Auth.auth().currentUser?.uid else {
             return
         }
         
-        let ref = Database.database().reference().child("user-memo/\(uid)")
+        let ref = Database.database().reference().child("user-memo").child(uid)
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
             
-            if let dictionaryArray = snapshot.value as? [[String: AnyObject]] {
+            if let dictionary = snapshot.value as? [String: AnyObject] {
                 print("메모 조회 성꽁")
-                
-                var memoArray: [MemoData]?
-                for data in dictionaryArray {
-                    let formedData = MemoData(dictionary: data)
-                    memoArray?.append(formedData)
+
+                var memoArray = [MemoData]()
+                for data in dictionary {
+                    let value = data.value
+                    var formedData = MemoData(dictionary: value as! [String : Any])
+                    formedData.key = data.key
+                    memoArray.append(formedData)
                 }
                 
-                //데이터 뿌리기
-                //present
+                self.presenter?.presentMemoListSuccess(response: memoArray)
+                
             } else {
                 print("메모 조회 실패: 저장된 메모 리스트 없음")
             }
-            
-            }, withCancel: nil)
+                        
+        }, withCancel: nil)
+    }
+    
+    func deleteMemo(key: String?) {
         
-        //MARK: 파이어베이스 에러 // Extraneous whitespace after '.' is not permitted
-        /*ref.child("user-memo/\(uid)"). getData { (error, snapshot) in
-            if let error = error {
-                print("Error getting data \(error)")
-            }
-            else if snapshot.exists() {
-                print("Got data \(snapshot.value!)")
-            }
-            else {
-                print("No data available")
-            }
-        }*/
+    }
+    
+    func changeMemoStatus(key: String?, isFixed: Bool) {
+        guard let uid = Auth.auth().currentUser?.uid,
+              let key = key else {
+            return
+        }
+        
+        let ref  = Database.database().reference().child("user-memo").child(uid).child(key)
+        ref.updateChildValues(["isFixed": isFixed])
+        
+        //MARK: 참고 https://pythonq.com/so/ios/1966026
     }
 }

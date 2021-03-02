@@ -44,7 +44,7 @@ class MemoListContentCell: UITableViewCell {
         }
     }
     
-    func updateData(title: String?, content: String?, savedDate: String) {
+    func updateData(title: String?, content: String?, savedDate: Date?) {
         
         if let title = title {
             titleLabel.text = title
@@ -53,7 +53,7 @@ class MemoListContentCell: UITableViewCell {
         }
         
         if let content = content {
-            let contentWithDate = savedDate + content //가공하기
+            let contentWithDate = "\(savedDate)" + content //가공하기
             contentLabel.text = contentWithDate
         } else {
             contentLabel.text = "\(savedDate) 내용 없음"

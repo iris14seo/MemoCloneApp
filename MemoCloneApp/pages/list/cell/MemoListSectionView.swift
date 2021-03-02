@@ -9,7 +9,7 @@ import UIKit
 
 //MARK: 고정 섹션일 경우 버튼 액션에 따라 셀이 fold and stretch 되어야한다.
 protocol MemoListSectionCellDelegate {
-    func handlFoldAndStretchButtonTap(isFolded: Bool)
+    func handleFoldAndStretchButtonTap(isFolded: Bool)
 }
 
 enum MemoListSectionStyle {
@@ -69,7 +69,7 @@ class MemoListSectionView: UITableViewHeaderFooterView {
             }
         }, completion: { finished in
             if finished {
-                self.delegate?.handlFoldAndStretchButtonTap(isFolded: self.isFolded)
+                self.delegate?.handleFoldAndStretchButtonTap(isFolded: self.isFolded)
             }
         })
         

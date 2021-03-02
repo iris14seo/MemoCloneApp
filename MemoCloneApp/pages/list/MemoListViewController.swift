@@ -13,14 +13,12 @@
 import UIKit
 
 protocol MemoListDisplayLogic: class {
-}
-
-struct TestMemoDataModel {
-    var id: String?
-    var title: String?
-    var content: String?
-    var updatedDate: String? //Date?
-    var isFixed: Bool
+    func displayMemoListSuccess(viewModel: [MemoData]?)
+    func displayMemoListFail()
+    func displayDeleteSuccess()
+    func displayDeleteFail()
+    func displayChangeIsFixedSuccess(viewModel: [MemoData]?)
+    func displayChangeIsFixedFail()
 }
 
 typealias MemoListPage = MemoListViewController
@@ -34,26 +32,10 @@ class MemoListViewController: UIViewController, MemoListDisplayLogic {
     let totalSectionCount = 2
     var isFixedMemoFolded: Bool = false
     
-    var fixedMemoArray: [TestMemoDataModel] = []
-    var nonFixedMemoArray: [TestMemoDataModel] = []
-    
     // data
-    let testDataArray = [TestMemoDataModel(id: "1",title: "제목1", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:24", isFixed: true),
-                         TestMemoDataModel(id: "2",title: "제목2", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:25", isFixed: true),
-                         TestMemoDataModel(id: "1",title: "제목3", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:26", isFixed: false),
-                         TestMemoDataModel(id: "3",title: "제목4", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:27", isFixed: false),
-                         TestMemoDataModel(id: "4",title: "제목5", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:28", isFixed: false),
-                         TestMemoDataModel(id: "5",title: "제목6", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:29", isFixed: false),
-                         TestMemoDataModel(id: "6",title: "제목7", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:27", isFixed: false),
-                         TestMemoDataModel(id: "7",title: "제목8", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:28", isFixed: false),
-                         TestMemoDataModel(id: "8",title: "제목9", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:29", isFixed: false),
-                         TestMemoDataModel(id: "9",title: "제목10", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:27", isFixed: false),
-                         TestMemoDataModel(id: "10",title: "제목11", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:28", isFixed: false),
-                         TestMemoDataModel(id: "11",title: "제목12", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:29", isFixed: false),
-                         TestMemoDataModel(id: "12",title: "제목13", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:27", isFixed: false),
-                         TestMemoDataModel(id: "13",title: "제목14", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:28", isFixed: false),
-                         TestMemoDataModel(id: "14",title: "제목15", content: "내용내용내용내용내용내용내용", updatedDate: "오전 9:29", isFixed: false)]
-    
+    var totalMemoArray = [MemoData]()
+    var fixedMemoArray = [MemoData]()
+    var nonFixedMemoArray = [MemoData]()
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -103,9 +85,12 @@ class MemoListViewController: UIViewController, MemoListDisplayLogic {
         initStyle()
         setNavigationBar(navigationItem: self.navigationItem, navigationController: self.navigationController, title: "리스트 페이지", hideTitleAtFirst: true)
         setTableView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
         
-        //interactor로 서버에서 데이터 받아와서 display했다 치고
-        testDisplayFunction()
+        self.interactor?.requestMemoList()
     }
     
     private func initStyle() {
@@ -151,12 +136,15 @@ class MemoListViewController: UIViewController, MemoListDisplayLogic {
     
     // MARK: Do something
     
-    func displaySomething(viewModel: MemoList.Something.ViewModel) {
-        //nameTextField.text = viewModel.name
-    }
-    
-    func testDisplayFunction() {
-        for data in self.testDataArray {
+    func displayMemoListSuccess(viewModel: [MemoData]?) {
+        guard let totalMemoArray = viewModel else {
+            print("저장된 메모 없음")
+            return
+        }
+        
+        //update data
+        self.totalMemoArray = totalMemoArray
+        for data in self.totalMemoArray {
             if data.isFixed {
                 self.fixedMemoArray.append(data)
             } else {
@@ -164,10 +152,49 @@ class MemoListViewController: UIViewController, MemoListDisplayLogic {
             }
         }
         
+        //update view
         listTableView.reloadData()
-        
-        setTotalCountText(totalCount: self.testDataArray.count)
+        setTotalCountText(totalCount: self.totalMemoArray.count)
     }
+    
+    func displayMemoListFail() {
+        showOKAlert(vc: self, title: "메모 불러오기 실패", message: "에러가 발생하였습니다.")
+    }
+    
+    func displayDeleteSuccess() {
+        showOKAlert(vc: self, title: "메모 삭제 성공", message: "정상적으로 삭제되었습니다.")
+    }
+    
+    func displayDeleteFail() {
+        showOKAlert(vc: self, title: "메모 삭제 실패", message: "에러가 발생하였습니다.")
+    }
+    
+    func displayChangeIsFixedSuccess(viewModel: [MemoData]?) {
+        //MARK: [이슈] 전체 값 말고 하나만 업데이트 되게 수정
+        guard let totalMemoArray = viewModel else {
+            print("저장된 메모 없음")
+            return
+        }
+        
+        //update data
+        self.totalMemoArray = totalMemoArray
+        for data in self.totalMemoArray {
+            if data.isFixed {
+                self.fixedMemoArray.append(data)
+            } else {
+                self.nonFixedMemoArray.append(data)
+            }
+        }
+        
+        //update view
+        listTableView.reloadData()
+        setTotalCountText(totalCount: self.totalMemoArray.count)
+    }
+    
+    func displayChangeIsFixedFail() {
+        showOKAlert(vc: self, title: "메모 상단고정 실패", message: "에러가 발생하였습니다.")
+    }
+    
 }
 
 extension MemoListViewController : UITableViewDataSource { //UIContextMenuInteractionDelegate
@@ -207,12 +234,12 @@ extension MemoListViewController : UITableViewDataSource { //UIContextMenuIntera
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
        
         // - empty
-        guard !testDataArray.isEmpty, testDataArray.count > indexPath.row else {
+        guard !totalMemoArray.isEmpty, totalMemoArray.count > indexPath.row else {
             return UITableViewCell()
         }
         
         // - 해당 셀
-        var data: TestMemoDataModel?
+        var data: MemoData?
         let dataArray = indexPath.section == 0 ? fixedMemoArray : nonFixedMemoArray
         
         guard !dataArray.isEmpty, dataArray.count > indexPath.row  else {
@@ -221,7 +248,7 @@ extension MemoListViewController : UITableViewDataSource { //UIContextMenuIntera
         data = dataArray[indexPath.row]
         
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath) as! MemoListContentCell
-        cell.updateData(title: data?.title, content: data?.content, savedDate: data?.updatedDate ?? "")
+        cell.updateData(title: data?.title, content: data?.content, savedDate: data?.updatedDate)
         
         return cell
     }
@@ -242,7 +269,7 @@ extension MemoListViewController : UITableViewDelegate {
     // CELL
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if isFixedMemoFolded, indexPath.section == 0 {
-            return 0
+             return 0
         } else {
             return cellHeight
         }
@@ -252,7 +279,7 @@ extension MemoListViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
         
-        guard testDataArray.count > indexPath.row else {
+        guard totalMemoArray.count > indexPath.row else {
             return
         }
         
@@ -262,8 +289,8 @@ extension MemoListViewController : UITableViewDelegate {
             return
         }
         
-        let destinationVc = MemoDetailViewController(data: dataArray[indexPath.row])
-        self.navigationController?.pushViewController(destinationVc, animated: true)
+        //let destinationVc = MemoDetailViewController(data: dataArray[indexPath.row])
+        //self.navigationController?.pushViewController(destinationVc, animated: true)
     }
     
     // CELL
@@ -287,11 +314,11 @@ extension MemoListViewController : UITableViewDelegate {
     
     // CELL swipe action
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt: IndexPath) -> UISwipeActionsConfiguration? { // 셀에서 스와이프에 의해 생성되는 메뉴를 셀의 앞에 보여준다
-        let contextItem = UIContextualAction(style: .destructive, title: "고정") {  (contextualAction, view, boolValue) in
+        let contextItem = UIContextualAction(style: .normal, title: "고정") {  (contextualAction, view, boolValue) in
             //Code I want to do here
         }
         contextItem.backgroundColor = UIColor.orange
-        contextItem.image = UIImage(systemName: "pin")
+        contextItem.image = leadingSwipeActionsConfigurationForRowAt.section == 0 ? UIImage(systemName: "pin.slash") : UIImage(systemName: "pin")
         
         let swipeActions = UISwipeActionsConfiguration(actions: [contextItem])
         
@@ -320,10 +347,10 @@ extension MemoListViewController : UITableViewDelegate {
             return
         }
         
-        let destinationVc = MemoDetailViewController(data: dataArray[indexPath.row])
-        animator.addAnimations {
-            self.navigationController?.pushViewController(destinationVc, animated: true)
-        }
+//        let destinationVc = MemoDetailViewController(data: dataArray[indexPath.row])
+//        animator.addAnimations {
+//            self.navigationController?.pushViewController(destinationVc, animated: true)
+//        }
     }
     
     func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
@@ -338,7 +365,7 @@ extension MemoListViewController : UITableViewDelegate {
 }
 
 extension MemoListViewController: MemoListSectionCellDelegate {
-    func handlFoldAndStretchButtonTap(isFolded: Bool) {
+    func handleFoldAndStretchButtonTap(isFolded: Bool) {
         self.isFixedMemoFolded = isFolded
         self.listTableView.reloadSections(IndexSet.init(integer: 0), with: .fade)
     }
@@ -357,53 +384,3 @@ extension MemoListViewController: UIScrollViewDelegate {
         }
     }
 }
-
-//MARK: 탭바 사용 현타옴
-//private func setTabBar(tabBarController: UITabBarController?) {
-//    guard let selectedVC = tabBarController?.selectedViewController else { return }
-//
-//    switch selectedVC.children.last {
-//    case is MemoListViewController:
-//        selectedVC.tabBarItem.title = "총 \(self.testDataArray.count)개"
-//        selectedVC.tabBarItem.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.darkGray, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 11)], for: .normal)
-//    default:
-//        <#code#>
-//    }
-//
-//    if selectedVC.children.last is MemoListViewController {
-//        selectedVC.tabBarItem.title = "총 \(self.testDataArray.count)개"
-//        selectedVC.tabBarItem.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.darkGray, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 11)], for: .normal)
-//    } else {
-//        selectedVC.tabBarItem = nil
-//    }
-//
-//}
-
-//MARK: 디프리케이트 됨
-//    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]?
-//    {
-    //    guard let memoLogList = testDataArray, memoLogList.count > 0 else {​​​​​ return nil }
-    //    let deleteAction = UITableViewRowAction(style: .destructive, title: "숨기기") {​​​​​ (action, indexpath) in
-    //      //테이블 뷰 업데이트
-    //    }
-    //
-    //    deleteAction.backgroundColor = .black
-    //    return [deleteAction]
-//        return nil
-//    }
-
-//func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-    // - empty
-    //    guard (testDataArray.count ?? 0) > 0 else {
-    //      var bottomSafeAreaGap:CGFloat = 0.0
-    //      if #available(iOS 11.0, *) {
-    //        bottomSafeAreaGap = view.safeAreaInsets.bottom
-    //      }​​​​​ else {
-    //        bottomSafeAreaGap = bottomLayoutGuide.length
-    //      }
-    //
-    //      let emptyCellHeight = (self.cardHistoryTableView.frame.height) - bottomSafeAreaGap - (self.headerView.frame.height)
-    //      return emptyCellHeight
-    //    }
-//    return cellHeight
-//}

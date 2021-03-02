@@ -13,6 +13,14 @@
 import UIKit
 
 protocol MemoListPresentationLogic {
+    func presentMemoListSuccess(response: [MemoData]?) //MARK: 임시
+    func presentMemoListFail()
+    
+    func presentDeleteSuccess()
+    func presentDeleteFail()
+    
+    func presentChangeIsFixedSuccess(response: [MemoData]?)
+    func presentChangeIsFixedFail()
 }
 
 class MemoListPresenter: MemoListPresentationLogic {
@@ -20,4 +28,27 @@ class MemoListPresenter: MemoListPresentationLogic {
   
   // MARK: Do something
   
+    func presentMemoListSuccess(response: [MemoData]?) {
+        viewController?.displayMemoListSuccess(viewModel: response)
+    }
+    
+    func presentMemoListFail() {
+        viewController?.displayMemoListFail()
+    }
+    
+    func presentDeleteSuccess() {
+        viewController?.displayDeleteSuccess()
+    }
+    
+    func presentDeleteFail() {
+        viewController?.displayDeleteFail()
+    }
+    
+    func presentChangeIsFixedSuccess(response: [MemoData]?) {
+        viewController?.displayChangeIsFixedSuccess(viewModel: response)
+    }
+    
+    func presentChangeIsFixedFail() {
+        viewController?.displayChangeIsFixedFail()
+    }
 }
