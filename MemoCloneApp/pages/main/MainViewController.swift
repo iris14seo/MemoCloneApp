@@ -75,13 +75,16 @@ class MainViewController: UIViewController, MainDisplayLogic {
         super.viewDidLoad()
         
         initStyle()
-        setNavigationBar(navigationItem: self.navigationItem, navigationController: self.navigationController, title: "메인화면")
+        setNavigationBar(navigationItem: self.navigationItem, navigationController: self.navigationController)
         checkIsFirstLaunch()
     }
     
     private func initStyle() {
         view.do {
             $0.backgroundColor = getKeyColor()
+            
+            let tapGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(handleTapAction))
+            $0.addGestureRecognizer(tapGestureRecognizer)
         }
         
         userInformView.do {
@@ -117,12 +120,18 @@ class MainViewController: UIViewController, MainDisplayLogic {
         pwTextField.text = ""
     }
     
+    @objc func handleTapAction() {
+        self.view.endEditing(true)
+    }
+    
     @IBAction func handleMoveToListBTNTap(_ sender: Any) {
         self.router?.routeToMemoListPage()
     }
     
     
     @IBAction func handleSignInBTNTap(_ sender: Any) {
+        self.view.endEditing(true)
+        
         guard let id = idTextField.text,
               let pw = pwTextField.text else {
             print("로그인시 필요한 아이디와 비밀번호를 잘못 입력하였습니다.")
@@ -132,11 +141,13 @@ class MainViewController: UIViewController, MainDisplayLogic {
         self.interactor?.signInUser(id: id, pw: pw)
     }
     
-    @IBAction func handleSignOutBTNTap(_ sender: Any) {
+    @IBAction func handleSignOutBTNTap(_ sender: Any) {        
         self.interactor?.signOut()
     }
     
     @IBAction func handleSignUpBTNTap(_ sender: Any) {
+        self.view.endEditing(true)
+        
         showSignUpAlert()
     }
    
@@ -146,22 +157,27 @@ class MainViewController: UIViewController, MainDisplayLogic {
                                       preferredStyle: .alert)
         registerAlert.addTextField { textField in
             textField.placeholder = "아이디(test@gmail.com)"
+            textField.overrideUserInterfaceStyle = .light
         }
         registerAlert.addTextField { textField in
             textField.placeholder = "비밀번호(6자리 이상)"
+            textField.overrideUserInterfaceStyle = .light
         }
         
         let cancelAction = UIAlertAction(title: "취소",
-                                          style: .destructive, handler: nil)
+                                         style: .default) { (action) in
+            self.view.endEditing(true)
+        }
         let registerAction = UIAlertAction(title: "가입",
-                                           style: .default)  { (action) in
+                                           style: .destructive)  { (action) in
             //회원가입
             guard let id = registerAlert.textFields?[0].text,
                   let pw = registerAlert.textFields?[1].text else {
                 print("회원가입 시 필요한 아이디와 비밀번호를 잘못 입력하였습니다.")
                 return
             }
-                  
+            self.view.endEditing(true)
+            
             self.interactor?.registerUser(id: id, pw: pw)
         }
         
