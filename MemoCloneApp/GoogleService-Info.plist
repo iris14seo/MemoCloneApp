@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>DATABASE_URL</key>
-	<string>https://memocloneapp-default-rtdb.firebaseio.com/</string>
+	<string>https://memocloneapp-e98c4-default-rtdb.firebaseio.com/</string>
 	<key>CLIENT_ID</key>
-	<string>818731533674-7eeshlm6fo951lc16ijb0donvo3scvg7.apps.googleusercontent.com</string>
+	<string>25342067694-p4kk17ih0ibvrtnhtk8qo8agu3gubeqd.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.818731533674-7eeshlm6fo951lc16ijb0donvo3scvg7</string>
+	<string>com.googleusercontent.apps.25342067694-p4kk17ih0ibvrtnhtk8qo8agu3gubeqd</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBrqzySgFcgt5iu85vFR_bIdVCXoZiddfk</string>
+	<string>AIzaSyBZoK2hiC8UrTHZ9RBS6oojgNsV5SyActY</string>
 	<key>GCM_SENDER_ID</key>
-	<string>818731533674</string>
+	<string>25342067694</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.irisMJ.MemoCloneApp</string>
 	<key>PROJECT_ID</key>
-	<string>memocloneapp</string>
+	<string>memocloneapp-e98c4</string>
 	<key>STORAGE_BUCKET</key>
-	<string>memocloneapp.appspot.com</string>
+	<string>memocloneapp-e98c4.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false/>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:818731533674:ios:74e1c4ec962f00f8f95113</string>
+	<string>1:25342067694:ios:563bc61ab8deb80b9dc4ff</string>
 </dict>
 </plist>
