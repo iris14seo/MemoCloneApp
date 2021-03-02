@@ -24,36 +24,79 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kmX-bn-D03">
+                    <rect key="frame" x="20" y="44" width="374" height="763"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tj4-W6-m2g">
+                            <rect key="frame" x="0.0" y="0.0" width="374" height="784"/>
+                            <subviews>
+                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="제목" placeholder="제목을 입력해주세요." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8ZO-dK-NrF" userLabel="제목">
+                                    <rect key="frame" x="0.0" y="30" width="374" height="27"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="27" id="Mcb-Qe-ycz"/>
+                                    </constraints>
+                                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                    <textInputTraits key="textInputTraits"/>
+                                </textField>
+                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="guL-p2-D2f" userLabel="내용">
+                                    <rect key="frame" x="0.0" y="67" width="374" height="717"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                    <color key="textColor" systemColor="labelColor"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                </textView>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstAttribute="trailing" secondItem="8ZO-dK-NrF" secondAttribute="trailing" id="5ZV-tx-pV2"/>
+                                <constraint firstItem="8ZO-dK-NrF" firstAttribute="leading" secondItem="tj4-W6-m2g" secondAttribute="leading" id="7Ty-lk-zXF"/>
+                                <constraint firstItem="8ZO-dK-NrF" firstAttribute="top" secondItem="tj4-W6-m2g" secondAttribute="top" constant="30" id="b2x-S6-Hyz"/>
+                                <constraint firstItem="guL-p2-D2f" firstAttribute="top" secondItem="8ZO-dK-NrF" secondAttribute="bottom" constant="10" id="ci9-K6-NYC"/>
+                                <constraint firstAttribute="trailing" secondItem="guL-p2-D2f" secondAttribute="trailing" id="sgr-xD-JtB"/>
+                                <constraint firstItem="guL-p2-D2f" firstAttribute="leading" secondItem="tj4-W6-m2g" secondAttribute="leading" id="x4I-pQ-ce9"/>
+                                <constraint firstAttribute="bottom" secondItem="guL-p2-D2f" secondAttribute="bottom" id="zEG-YB-qiJ"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="tj4-W6-m2g" firstAttribute="leading" secondItem="kmX-bn-D03" secondAttribute="leading" id="G7l-fw-6Dx"/>
+                        <constraint firstAttribute="bottom" secondItem="tj4-W6-m2g" secondAttribute="bottom" id="frp-1d-6Jw"/>
+                        <constraint firstItem="tj4-W6-m2g" firstAttribute="top" secondItem="kmX-bn-D03" secondAttribute="top" id="qVB-Mt-C9H"/>
+                        <constraint firstAttribute="trailing" secondItem="tj4-W6-m2g" secondAttribute="trailing" id="zlC-ff-CfV"/>
+                    </constraints>
+                </scrollView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0vx-Xh-bmY" userLabel="Bottom View">
-                    <rect key="frame" x="0.0" y="822" width="414" height="74"/>
+                    <rect key="frame" x="0.0" y="807" width="414" height="89"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aIs-pK-tK8">
-                            <rect key="frame" x="0.0" y="0.0" width="414" height="40"/>
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="55"/>
                             <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B2w-ec-dRk">
-                                    <rect key="frame" x="17" y="5" width="33" height="35"/>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B2w-ec-dRk" userLabel="수정">
+                                    <rect key="frame" x="362" y="18" width="35" height="35"/>
                                     <constraints>
-                                        <constraint firstAttribute="width" secondItem="B2w-ec-dRk" secondAttribute="height" multiplier="16:17" id="CMa-0E-0iJ"/>
-                                        <constraint firstAttribute="width" constant="33" id="cbm-JS-fsi"/>
+                                        <constraint firstAttribute="width" secondItem="B2w-ec-dRk" secondAttribute="height" multiplier="1:1" id="CMa-0E-0iJ"/>
+                                        <constraint firstAttribute="width" constant="35" id="cbm-JS-fsi"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
-                                    <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <state key="normal" title="수정">
+                                    <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <state key="normal" image="edit">
                                         <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </state>
                                     <connections>
                                         <action selector="handleEditBTNTap:" destination="-1" eventType="touchUpInside" id="tDc-pL-rYu"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DtS-xG-OWo">
-                                    <rect key="frame" x="364" y="5" width="33" height="35"/>
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DtS-xG-OWo" userLabel="저장">
+                                    <rect key="frame" x="362" y="18" width="35" height="35"/>
                                     <constraints>
-                                        <constraint firstAttribute="width" constant="33" id="OWw-vB-1Qw"/>
-                                        <constraint firstAttribute="width" secondItem="DtS-xG-OWo" secondAttribute="height" multiplier="16:17" id="pVf-QW-Lo9"/>
+                                        <constraint firstAttribute="width" constant="35" id="OWw-vB-1Qw"/>
+                                        <constraint firstAttribute="width" secondItem="DtS-xG-OWo" secondAttribute="height" id="pVf-QW-Lo9"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                     <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <state key="normal" title="저장">
+                                    <state key="normal" image="disk">
                                         <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </state>
                                     <connections>
@@ -63,12 +106,13 @@
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
-                                <constraint firstItem="B2w-ec-dRk" firstAttribute="width" secondItem="B2w-ec-dRk" secondAttribute="height" multiplier="16:17" id="Doc-7R-ov5"/>
-                                <constraint firstAttribute="bottom" secondItem="DtS-xG-OWo" secondAttribute="bottom" id="HTh-zu-LrU"/>
-                                <constraint firstAttribute="height" constant="40" id="IbJ-F6-yQ6"/>
-                                <constraint firstAttribute="bottom" secondItem="B2w-ec-dRk" secondAttribute="bottom" id="OBk-jA-82S"/>
-                                <constraint firstAttribute="trailing" secondItem="DtS-xG-OWo" secondAttribute="trailing" constant="17" id="UlU-yV-Ab2"/>
-                                <constraint firstItem="B2w-ec-dRk" firstAttribute="leading" secondItem="aIs-pK-tK8" secondAttribute="leading" constant="17" id="qWa-yH-KT3"/>
+                                <constraint firstItem="B2w-ec-dRk" firstAttribute="bottom" secondItem="DtS-xG-OWo" secondAttribute="bottom" id="AYQ-J3-tij"/>
+                                <constraint firstAttribute="height" constant="55" id="IbJ-F6-yQ6"/>
+                                <constraint firstItem="B2w-ec-dRk" firstAttribute="trailing" secondItem="DtS-xG-OWo" secondAttribute="trailing" id="TEW-VK-J1F"/>
+                                <constraint firstItem="B2w-ec-dRk" firstAttribute="top" secondItem="DtS-xG-OWo" secondAttribute="top" id="jvB-Bd-gX9"/>
+                                <constraint firstAttribute="trailing" secondItem="DtS-xG-OWo" secondAttribute="trailing" constant="17" id="mMF-d1-BtW"/>
+                                <constraint firstAttribute="bottom" secondItem="DtS-xG-OWo" secondAttribute="bottom" constant="2" id="n00-nt-fCo"/>
+                                <constraint firstItem="B2w-ec-dRk" firstAttribute="leading" secondItem="DtS-xG-OWo" secondAttribute="leading" id="rIm-Ay-Pg7"/>
                             </constraints>
                         </view>
                     </subviews>
@@ -79,57 +123,30 @@
                         <constraint firstItem="aIs-pK-tK8" firstAttribute="leading" secondItem="0vx-Xh-bmY" secondAttribute="leading" id="rnJ-Wf-tCW"/>
                     </constraints>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tj4-W6-m2g">
-                    <rect key="frame" x="20" y="44" width="374" height="773"/>
-                    <subviews>
-                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="제목" placeholder="제목을 입력해주세요." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8ZO-dK-NrF" userLabel="제목">
-                            <rect key="frame" x="0.0" y="30" width="374" height="25.5"/>
-                            <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                            <textInputTraits key="textInputTraits"/>
-                        </textField>
-                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="guL-p2-D2f" userLabel="내용">
-                            <rect key="frame" x="0.0" y="65.5" width="374" height="707.5"/>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                            <mutableString key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</mutableString>
-                            <color key="textColor" systemColor="labelColor"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                        </textView>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstAttribute="trailing" secondItem="8ZO-dK-NrF" secondAttribute="trailing" id="5ZV-tx-pV2"/>
-                        <constraint firstItem="8ZO-dK-NrF" firstAttribute="leading" secondItem="tj4-W6-m2g" secondAttribute="leading" id="7Ty-lk-zXF"/>
-                        <constraint firstItem="8ZO-dK-NrF" firstAttribute="top" secondItem="tj4-W6-m2g" secondAttribute="top" constant="30" id="b2x-S6-Hyz"/>
-                        <constraint firstItem="guL-p2-D2f" firstAttribute="top" secondItem="8ZO-dK-NrF" secondAttribute="bottom" constant="10" id="ci9-K6-NYC"/>
-                        <constraint firstAttribute="trailing" secondItem="guL-p2-D2f" secondAttribute="trailing" id="sgr-xD-JtB"/>
-                        <constraint firstItem="guL-p2-D2f" firstAttribute="leading" secondItem="tj4-W6-m2g" secondAttribute="leading" id="x4I-pQ-ce9"/>
-                        <constraint firstAttribute="bottom" secondItem="guL-p2-D2f" secondAttribute="bottom" id="zEG-YB-qiJ"/>
-                    </constraints>
-                </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
-            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="tj4-W6-m2g" secondAttribute="bottom" constant="45" id="A9N-4J-UG7"/>
-                <constraint firstItem="tj4-W6-m2g" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="GAF-uI-zy0"/>
+                <constraint firstItem="0vx-Xh-bmY" firstAttribute="top" secondItem="kmX-bn-D03" secondAttribute="bottom" id="8qX-Vs-RCh"/>
                 <constraint firstAttribute="bottom" secondItem="0vx-Xh-bmY" secondAttribute="bottom" id="HXx-1d-EDB"/>
-                <constraint firstItem="tj4-W6-m2g" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="20" id="M5o-Sx-yTd"/>
+                <constraint firstItem="tj4-W6-m2g" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="Lkq-mn-Zxa"/>
+                <constraint firstItem="kmX-bn-D03" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="20" id="UPz-QH-C9c"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="kmX-bn-D03" secondAttribute="trailing" constant="20" id="V4q-pO-ke5"/>
                 <constraint firstItem="0vx-Xh-bmY" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="XGf-Og-y74"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="tj4-W6-m2g" secondAttribute="trailing" constant="20" id="boA-kr-3NT"/>
+                <constraint firstItem="tj4-W6-m2g" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" constant="-40" id="buG-FG-uPB"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="aIs-pK-tK8" secondAttribute="bottom" id="d50-9z-XIK"/>
+                <constraint firstItem="kmX-bn-D03" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="lOA-Ex-iaf"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="0vx-Xh-bmY" secondAttribute="trailing" id="w5l-6Y-wsa"/>
+                <constraint firstItem="guL-p2-D2f" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" multiplier="0.8" id="wDC-z4-b2v"/>
             </constraints>
             <point key="canvasLocation" x="141" y="88"/>
         </view>
     </objects>
     <resources>
+        <image name="disk" width="128" height="128"/>
+        <image name="edit" width="128" height="128"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
     </resources>
 </document>

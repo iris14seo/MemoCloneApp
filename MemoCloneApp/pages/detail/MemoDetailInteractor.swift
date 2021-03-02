@@ -14,9 +14,13 @@ import UIKit
 import Firebase
 
 protocol MemoDetailBusinessLogic {
-    //func setMemoDatabase()
-    func requestUpdateMemoData(request: MemoDetail.저장.Request)
-    func requestSaveMemoData(request: MemoDetail.저장.Request)
+    func requestSaveMemoData(request: MemoDetail.저장.Request, key: String?)
+}
+
+extension MemoDetailBusinessLogic {
+    func requestSaveMemoData(request: MemoDetail.저장.Request, key: String? = nil) {
+        requestSaveMemoData(request: request, key: key)
+    }
 }
 
 protocol MemoDetailDataStore {
@@ -28,20 +32,42 @@ class MemoDetailInteractor: MemoDetailBusinessLogic, MemoDetailDataStore {
         
     // MARK: Do something
     
-//    func setMemoDatabase() {
-//        guard let uid = Auth.auth().currentUser?.uid else {
-//            return
-//        }
-//
-//        let ref = Database.database().reference().child("user-memo")
-//        ref.setValue(uid)
-//    }
-    
-    func requestUpdateMemoData(request: MemoDetail.저장.Request) {
+    func requestUpdateMemoData(request: MemoDetail.저장.Request, key: String?) {
+        guard let memoData = request.memoData,
+              let key = key else {
+            return
+        }
         
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
+        let ref = Database.database().reference().child("user-memo")
+        let childRef = ref.child(uid).child(key)
+        
+        // child properties
+        let title = memoData.title ?? ""
+        let content = memoData.content ?? ""
+        let isFixed = memoData.isFixed
+        let updatedDate = Int(Date().timeIntervalSince1970)
+        let memoId:String = uid + "&" + String(updatedDate)
+        let values: [String: Any] = ["uid": uid, "memoId": memoId, "title": title, "content": content, "updatedDate": updatedDate, "isFixed": isFixed]
+        
+        childRef.updateChildValues(values) {(error, ref) in
+            if error != nil {
+                print("메모수정 실패:", error!)
+                self.presenter?.presentSaveFail()
+                return
+            }
+            
+            guard let memoId = childRef.key else { return }
+            print("메모수정 성공: \(memoId)")
+            self.presenter?.presentSaveSuccess()
+            
+        }
     }
     
-    func requestSaveMemoData(request: MemoDetail.저장.Request) {
+    func requestSaveMemoData(request: MemoDetail.저장.Request, key: String? = nil) {
         guard let memoData = request.memoData else {
             return
         }
@@ -51,11 +77,16 @@ class MemoDetailInteractor: MemoDetailBusinessLogic, MemoDetailDataStore {
         }
         
         let ref = Database.database().reference().child("user-memo")
-        let childRef = ref.child(uid) //childByAutoId() -> 나중에 이거 키값으로 메모 찾아오게 autoId 메서드 미사용으로 변경
+        var childRef = DatabaseReference()
+        if let key = key {
+            childRef = ref.child(uid).child(key)
+        } else {
+            childRef = ref.child(uid).childByAutoId()
+        }
         
         // child properties
-        let title = memoData.title
-        let content = memoData.content
+        let title = memoData.title ?? ""
+        let content = memoData.content ?? ""
         let isFixed = memoData.isFixed
         let updatedDate = Int(Date().timeIntervalSince1970)
         let memoId:String = uid + "&" + String(updatedDate)

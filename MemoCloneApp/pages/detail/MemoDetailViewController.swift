@@ -34,13 +34,15 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
         setup()
     }
     
-    private var memoData: TestMemoDataModel?
+    private var memoData: MemoData?
     private var isNewMemo: Bool = true
+    private var key: String?
     
-    init(data: TestMemoDataModel) {
+    init(data: MemoData) {
         //MARK: 커스톰 이니셜라이저 http://minsone.github.io/mac/ios/swift-initialization-summary
         self.memoData = data
         self.isNewMemo = false
+        self.key = data.key
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -76,29 +78,13 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
     @IBOutlet weak var editButton: UIButton!
     @IBOutlet weak var saveButton: UIButton!
     
-    private func dataBind() {
-        
-        editButton.isHidden = isNewMemo
-        
-        updateEditMode(isNewMemo)
-        
-        if isNewMemo {
-            clearData()
-        } else {
-            guard let data = self.memoData else {
-                return
-            }
-            
-            titleTextField.text = data.title
-            contentTextView.text = data.content
-        }
-        
-        setTextViewPlaceHolder()
-    }
-    
     private func initStyle() {
         view.do {
             $0.backgroundColor = getKeyColor()
+            
+            let downSwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeAction(_:)))
+            downSwipeGestureRecognizer.direction = .down
+            $0.addGestureRecognizer(downSwipeGestureRecognizer)
         }
         
         titleTextField.do {
@@ -108,6 +94,7 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
             $0.text = ""
             $0.isUserInteractionEnabled = false
             $0.placeholder = "제목을 입력해주세요."
+            $0.overrideUserInterfaceStyle = .light // 다크모드 대응
         }
         
         contentTextView.do {
@@ -119,14 +106,26 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
             $0.showsVerticalScrollIndicator = true
             $0.backgroundColor = .clear
             $0.delegate = self
+            $0.overrideUserInterfaceStyle = .light // 다크모드 대응
+        }
+        
+        initButton()
+        initInteraction()
+    }
+    
+    private func initButton() {
+        if isNewMemo {
+            editButton.isHidden = true
+            saveButton.isHidden = false
+        } else {
+            editButton.isHidden = false
+            saveButton.isHidden = true
         }
     }
     
-    private func clearData() {
-        titleTextField.text = ""
-        contentTextView.text = ""
-        
-        titleTextField.becomeFirstResponder()
+    private func initInteraction() {
+        titleTextField.isUserInteractionEnabled = isNewMemo
+        contentTextView.isEditable = isNewMemo
     }
     
     private func setTextViewPlaceHolder() {
@@ -140,10 +139,27 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
             self.contentTextView.textColor = .lightGray
         }
     }
+   
+    private func dataBind() {
+        if isNewMemo {
+            titleTextField.text = ""
+            contentTextView.text = ""
+            
+            setNewMemo()
+        } else {
+            guard let data = self.memoData else {
+                return
+            }
+            
+            titleTextField.text = data.title
+            contentTextView.text = data.content
+        }
+        
+        setTextViewPlaceHolder()
+    }
     
-    private func updateEditMode(_ edit: Bool = false) {
-        titleTextField.isUserInteractionEnabled = edit
-        contentTextView.isEditable = edit
+    private func setNewMemo() { //MARK: 네이밍 고민중
+        titleTextField.becomeFirstResponder()
     }
     
     private func requestSaveMemoData() {
@@ -162,31 +178,41 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
         var request = MemoDetail.저장.Request()
         request.memoData = memoData
         
-        self.interactor?.requestSaveMemoData(request: request)
+        self.interactor?.requestSaveMemoData(request: request, key: "-MUnVOkwCzqu4TU_9mVP")
     }
     
     @IBAction func handleEditBTNTap(_ sender: Any) {
-        updateEditMode(true)
+        titleTextField.isUserInteractionEnabled = true
+        contentTextView.isEditable = true
+        
+        editButton.isHidden = false
+        saveButton.isHidden = true
+        
+        contentTextView.becomeFirstResponder()
     }
     
     @IBAction func handleSaveBTNTap(_ sender: Any) {
         requestSaveMemoData()
     }
     
+    @objc func handleSwipeAction(_ sender: UISwipeGestureRecognizer) {
+        // down swipe -> keyboard hide
+        if sender.direction == .down {
+            self.view.endEditing(true)
+        }
+    }
     
     // MARK: Do something
     
     func displaySaveSuccess() {
-        let saveAction = UIAlertAction(title: "OK", style: .destructive) { (action) in
+        let saveAction = UIAlertAction(title: "OK", style: .default) { (action) in
             self.router?.routeToListPage()
         }
         showOKAlert(vc: self, title: "저장 성공", message: "메모가 성공적으로 저장되었습니다.", okAction: saveAction)
-        clearData()
     }
     
     func displaySaveFail() {
         showOKAlert(vc: self, title: "저장 실패", message: "에러가 발생하여 저장이 실패하였습니다.")
-        clearData()
     }
     
 }
