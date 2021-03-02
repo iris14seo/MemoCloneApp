@@ -48,6 +48,7 @@
 		BB54D68B25D15C2C00407E30 /* MemoDetailModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB54D68525D15C2C00407E30 /* MemoDetailModels.swift */; };
 		BB54D68C25D15C2C00407E30 /* MemoDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB54D68625D15C2C00407E30 /* MemoDetailViewController.swift */; };
 		BB54D68D25D15C2C00407E30 /* MemoDetailInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB54D68725D15C2C00407E30 /* MemoDetailInteractor.swift */; };
+		BB59C09D25EE69B5004DB1BC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB59C09C25EE69B5004DB1BC /* GoogleService-Info.plist */; };
 		BB8AF72225E6A32300DD9ED2 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8AF72025E6A32300DD9ED2 /* SplashViewController.swift */; };
 		BB8AF72325E6A32300DD9ED2 /* SplashViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB8AF72125E6A32300DD9ED2 /* SplashViewController.xib */; };
 		BB8AF72D25E6A68800DD9ED2 /* Sets.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8AF72C25E6A68800DD9ED2 /* Sets.swift */; };
@@ -56,7 +57,6 @@
 		BBE366EF25ECC38300168F79 /* TextField+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBE366EE25ECC38300168F79 /* TextField+Extension.swift */; };
 		BBE3673525ECD47100168F79 /* CustomAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBE3673425ECD47100168F79 /* CustomAlert.swift */; };
 		BBE3675625ED01A700168F79 /* CommonModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBE3675525ED01A700168F79 /* CommonModel.swift */; };
-		BBEF566B25ECA81100246F3A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BBEF566A25ECA81100246F3A /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -129,6 +129,7 @@
 		BB54D68525D15C2C00407E30 /* MemoDetailModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDetailModels.swift; sourceTree = "<group>"; };
 		BB54D68625D15C2C00407E30 /* MemoDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDetailViewController.swift; sourceTree = "<group>"; };
 		BB54D68725D15C2C00407E30 /* MemoDetailInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDetailInteractor.swift; sourceTree = "<group>"; };
+		BB59C09C25EE69B5004DB1BC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BB8AF72025E6A32300DD9ED2 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		BB8AF72125E6A32300DD9ED2 /* SplashViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SplashViewController.xib; sourceTree = "<group>"; };
 		BB8AF72C25E6A68800DD9ED2 /* Sets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sets.swift; sourceTree = "<group>"; };
@@ -137,7 +138,6 @@
 		BBE366EE25ECC38300168F79 /* TextField+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextField+Extension.swift"; sourceTree = "<group>"; };
 		BBE3673425ECD47100168F79 /* CustomAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlert.swift; sourceTree = "<group>"; };
 		BBE3675525ED01A700168F79 /* CommonModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonModel.swift; sourceTree = "<group>"; };
-		BBEF566A25ECA81100246F3A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		EC82EF67FCBC5E3723C19FFC /* Pods-MemoCloneApp-MemoCloneAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MemoCloneApp-MemoCloneAppUITests.debug.xcconfig"; path = "Target Support Files/Pods-MemoCloneApp-MemoCloneAppUITests/Pods-MemoCloneApp-MemoCloneAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -262,9 +262,9 @@
 		BB54D62E25D1561E00407E30 /* MemoCloneApp */ = {
 			isa = PBXGroup;
 			children = (
+				BB59C09C25EE69B5004DB1BC /* GoogleService-Info.plist */,
 				BB54D63825D1561F00407E30 /* Assets.xcassets */,
 				BB54D63D25D1561F00407E30 /* Info.plist */,
-				BBEF566A25ECA81100246F3A /* GoogleService-Info.plist */,
 				BB54D63A25D1561F00407E30 /* LaunchScreen.storyboard */,
 				BB54D62F25D1561E00407E30 /* AppDelegate.swift */,
 				BB8AF72B25E6A65F00DD9ED2 /* extensions */,
@@ -489,7 +489,7 @@
 				BB54D63C25D1561F00407E30 /* LaunchScreen.storyboard in Resources */,
 				BB54D66A25D159D200407E30 /* MemoListViewController.xib in Resources */,
 				BB323DBA25EB685A001D4058 /* MemoDetailViewController.xib in Resources */,
-				BBEF566B25ECA81100246F3A /* GoogleService-Info.plist in Resources */,
+				BB59C09D25EE69B5004DB1BC /* GoogleService-Info.plist in Resources */,
 				BB54D63925D1561F00407E30 /* Assets.xcassets in Resources */,
 				BB0A299B25E3FAE800361DCD /* MainViewController.xib in Resources */,
 			);

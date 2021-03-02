@@ -10,18 +10,20 @@ import UIKit
 
 public struct MemoData {
     var uid: String?
-    var memoId: String?
+    var key: String?
+//    var memoId: String?
     var title: String?
     var content: String?
     var updatedDate: Date?
-    var isFixed: Bool?
+    var isFixed: Bool
     
     init(dictionary: [String: Any]) {
         self.uid = dictionary["uid"] as? String
-        self.memoId = dictionary["memoId"] as? String
+//        self.memoId = dictionary["memoId"] as? String
         self.title = dictionary["title"] as? String
         self.content = dictionary["content"] as? String
-        self.updatedDate = dictionary["updatedDate"] as? Date
-        self.isFixed = dictionary["isFixed"] as? Bool
+        let epocTime = TimeInterval(dictionary["updatedDate"] as? Int ?? 0)
+        self.updatedDate = Date(timeIntervalSince1970: epocTime)
+        self.isFixed = dictionary["isFixed"] as! Bool
     }
 }
