@@ -19,7 +19,7 @@ protocol MemoListPresentationLogic {
     func presentDeleteSuccess()
     func presentDeleteFail()
     
-    func presentChangeIsFixedSuccess(response: [MemoData]?)
+    func presentChangeIsFixedSuccess()
     func presentChangeIsFixedFail()
 }
 
@@ -48,8 +48,8 @@ class MemoListPresenter: MemoListPresentationLogic {
         viewController?.displayDeleteFail()
     }
     
-    func presentChangeIsFixedSuccess(response: [MemoData]?) {
-        viewController?.displayChangeIsFixedSuccess(viewModel: response)
+    func presentChangeIsFixedSuccess() {
+        viewController?.displayChangeIsFixedSuccess()
     }
     
     func presentChangeIsFixedFail() {

@@ -57,18 +57,31 @@ class MemoListInteractor: MemoListBusinessLogic, MemoListDataStore {
     }
     
     func deleteMemo(key: String?) {
+        guard let uid = Auth.auth().currentUser?.uid,
+              let key = key else {
+            print("uid OR key 없음")
+            return
+        }
         
+        let ref = Database.database().reference().child("user-memo").child(uid).child(key)
+        ref.removeValue()
+        
+        self.presenter?.presentDeleteSuccess()
+        
+        //MARK: 참고(파이어베이스 - 특정 데이터값 삭제)
     }
     
     func changeMemoStatus(key: String?, isFixed: Bool) {
         guard let uid = Auth.auth().currentUser?.uid,
               let key = key else {
+            print("uid OR key 없음")
             return
         }
         
         let ref  = Database.database().reference().child("user-memo").child(uid).child(key)
         ref.updateChildValues(["isFixed": isFixed])
+        self.presenter?.presentChangeIsFixedSuccess()
         
-        //MARK: 참고 https://pythonq.com/so/ios/1966026
+        //MARK: 참고(파이어베이스 - 특정 데이터만 수정하기) https://pythonq.com/so/ios/1966026
     }
 }

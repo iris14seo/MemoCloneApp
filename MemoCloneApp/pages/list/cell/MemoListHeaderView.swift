@@ -34,7 +34,7 @@ class MemoListHeaderView: CustomXibView {
         }
         
         headerLabel.do {
-            $0.text = "리스트 페이지"
+            $0.text = "리스트"
             $0.font = .boldSystemFont(ofSize: 24)
             $0.textColor = .black
             $0.textAlignment = .left
