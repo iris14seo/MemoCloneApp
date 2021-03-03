@@ -96,6 +96,7 @@ class MainViewController: UIViewController, MainDisplayLogic {
             btnTitle.addAttribute(NSAttributedString.Key.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: NSMakeRange(0, btnTitle.length))
             $0.setAttributedTitle(btnTitle, for: .normal)
             $0.setAttributedTitle(btnTitle, for: .selected)
+            $0.overrideUserInterfaceStyle = .light
         }
         
         inputContainerView.do {
@@ -105,11 +106,13 @@ class MainViewController: UIViewController, MainDisplayLogic {
         idTextField.do {
             $0.addLeftPadding()
             $0.addRightPadding()
+            $0.overrideUserInterfaceStyle = .light
         }
         
         pwTextField.do {
             $0.addLeftPadding()
             $0.addRightPadding()
+            $0.overrideUserInterfaceStyle = .light
         }
         
         hideUserView()
