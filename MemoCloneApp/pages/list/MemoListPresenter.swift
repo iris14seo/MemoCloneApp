@@ -29,7 +29,11 @@ class MemoListPresenter: MemoListPresentationLogic {
   // MARK: Do something
   
     func presentMemoListSuccess(response: [MemoData]?) {
-        viewController?.displayMemoListSuccess(viewModel: response)
+        let viewModel = response?.sorted(by: {
+            $0.updatedDate ?? Date() < $1.updatedDate ?? Date()
+        })
+        
+        viewController?.displayMemoListSuccess(viewModel: viewModel)
     }
     
     func presentMemoListFail() {

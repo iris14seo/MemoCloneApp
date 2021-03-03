@@ -90,6 +90,15 @@ class MemoListViewController: UIViewController, MemoListDisplayLogic {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         
+        self.requestMemoList()
+    }
+    
+    private func requestMemoList() {
+        // default
+        totalMemoArray = [MemoData]()
+        fixedMemoArray = [MemoData]()
+        nonFixedMemoArray = [MemoData]()
+        
         self.interactor?.requestMemoList()
     }
     
@@ -311,8 +320,8 @@ extension MemoListViewController : UITableViewDelegate {
             return
         }
         
-        //let destinationVc = MemoDetailViewController(data: dataArray[indexPath.row])
-        //self.navigationController?.pushViewController(destinationVc, animated: true)
+        let destinationVc = MemoDetailViewController(data: dataArray[indexPath.row])
+        self.navigationController?.pushViewController(destinationVc, animated: true)
     }
     
     // CELL
@@ -369,10 +378,10 @@ extension MemoListViewController : UITableViewDelegate {
             return
         }
         
-//        let destinationVc = MemoDetailViewController(data: dataArray[indexPath.row])
-//        animator.addAnimations {
-//            self.navigationController?.pushViewController(destinationVc, animated: true)
-//        }
+        let destinationVc = MemoDetailViewController(data: dataArray[indexPath.row])
+        animator.addAnimations {
+            self.navigationController?.pushViewController(destinationVc, animated: true)
+        }
     }
     
     func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
