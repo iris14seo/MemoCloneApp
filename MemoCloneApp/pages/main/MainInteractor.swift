@@ -135,7 +135,7 @@ class MainInteractor: MainBusinessLogic, MainDataStore {
         presenter?.presentMainPage(response: response)
     }
     
-    private func checkAutoSignIn() -> AutoSignIn {
+    private func checkAutoSignIn() -> AutoSignIn? {
         if let user = Auth.auth().currentUser {
             print("자동 로그인 성공 checkAutoSignIn")
             return AutoSignIn(isSuccess: true, currentUserId: user.email)
