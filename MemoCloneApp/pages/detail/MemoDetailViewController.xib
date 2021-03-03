@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -15,6 +15,7 @@
                 <outlet property="contentTextView" destination="guL-p2-D2f" id="wFz-hS-1gj"/>
                 <outlet property="editButton" destination="B2w-ec-dRk" id="t5L-Iu-hT0"/>
                 <outlet property="saveButton" destination="DtS-xG-OWo" id="Zag-WD-2Cg"/>
+                <outlet property="scrollView" destination="kmX-bn-D03" id="oSb-HG-0uc"/>
                 <outlet property="titleTextField" destination="8ZO-dK-NrF" id="Ecy-Um-BhR"/>
                 <outlet property="view" destination="iN0-l3-epB" id="3Ev-Sq-F12"/>
             </connections>
@@ -74,10 +75,10 @@
                             <rect key="frame" x="0.0" y="0.0" width="414" height="55"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B2w-ec-dRk" userLabel="수정">
-                                    <rect key="frame" x="362" y="18" width="35" height="35"/>
+                                    <rect key="frame" x="372" y="15" width="25" height="25"/>
                                     <constraints>
                                         <constraint firstAttribute="width" secondItem="B2w-ec-dRk" secondAttribute="height" multiplier="1:1" id="CMa-0E-0iJ"/>
-                                        <constraint firstAttribute="width" constant="35" id="cbm-JS-fsi"/>
+                                        <constraint firstAttribute="width" constant="25" id="cbm-JS-fsi"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
                                     <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -89,9 +90,9 @@
                                     </connections>
                                 </button>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DtS-xG-OWo" userLabel="저장">
-                                    <rect key="frame" x="362" y="18" width="35" height="35"/>
+                                    <rect key="frame" x="372" y="15" width="25" height="25"/>
                                     <constraints>
-                                        <constraint firstAttribute="width" constant="35" id="OWw-vB-1Qw"/>
+                                        <constraint firstAttribute="width" constant="25" id="OWw-vB-1Qw"/>
                                         <constraint firstAttribute="width" secondItem="DtS-xG-OWo" secondAttribute="height" id="pVf-QW-Lo9"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
@@ -109,9 +110,9 @@
                                 <constraint firstItem="B2w-ec-dRk" firstAttribute="bottom" secondItem="DtS-xG-OWo" secondAttribute="bottom" id="AYQ-J3-tij"/>
                                 <constraint firstAttribute="height" constant="55" id="IbJ-F6-yQ6"/>
                                 <constraint firstItem="B2w-ec-dRk" firstAttribute="trailing" secondItem="DtS-xG-OWo" secondAttribute="trailing" id="TEW-VK-J1F"/>
+                                <constraint firstItem="DtS-xG-OWo" firstAttribute="centerY" secondItem="aIs-pK-tK8" secondAttribute="centerY" id="eLo-SV-XSv"/>
                                 <constraint firstItem="B2w-ec-dRk" firstAttribute="top" secondItem="DtS-xG-OWo" secondAttribute="top" id="jvB-Bd-gX9"/>
                                 <constraint firstAttribute="trailing" secondItem="DtS-xG-OWo" secondAttribute="trailing" constant="17" id="mMF-d1-BtW"/>
-                                <constraint firstAttribute="bottom" secondItem="DtS-xG-OWo" secondAttribute="bottom" constant="2" id="n00-nt-fCo"/>
                                 <constraint firstItem="B2w-ec-dRk" firstAttribute="leading" secondItem="DtS-xG-OWo" secondAttribute="leading" id="rIm-Ay-Pg7"/>
                             </constraints>
                         </view>

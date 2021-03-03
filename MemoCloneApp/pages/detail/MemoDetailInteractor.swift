@@ -32,41 +32,6 @@ class MemoDetailInteractor: MemoDetailBusinessLogic, MemoDetailDataStore {
         
     // MARK: Do something
     
-    func requestUpdateMemoData(request: MemoDetail.저장.Request, key: String?) {
-        guard let memoData = request.memoData,
-              let key = key else {
-            return
-        }
-        
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
-        
-        let ref = Database.database().reference().child("user-memo")
-        let childRef = ref.child(uid).child(key)
-        
-        // child properties
-        let title = memoData.title ?? ""
-        let content = memoData.content ?? ""
-        let isFixed = memoData.isFixed
-        let updatedDate = Int(Date().timeIntervalSince1970)
-        let memoId:String = uid + "&" + String(updatedDate)
-        let values: [String: Any] = ["uid": uid, "memoId": memoId, "title": title, "content": content, "updatedDate": updatedDate, "isFixed": isFixed]
-        
-        childRef.updateChildValues(values) {(error, ref) in
-            if error != nil {
-                print("메모수정 실패:", error!)
-                self.presenter?.presentSaveFail()
-                return
-            }
-            
-            guard let memoId = childRef.key else { return }
-            print("메모수정 성공: \(memoId)")
-            self.presenter?.presentSaveSuccess()
-            
-        }
-    }
-    
     func requestSaveMemoData(request: MemoDetail.저장.Request, key: String? = nil) {
         guard let memoData = request.memoData else {
             return
@@ -89,8 +54,7 @@ class MemoDetailInteractor: MemoDetailBusinessLogic, MemoDetailDataStore {
         let content = memoData.content ?? ""
         let isFixed = memoData.isFixed
         let updatedDate = Int(Date().timeIntervalSince1970)
-        let memoId:String = uid + "&" + String(updatedDate)
-        let values: [String: Any] = ["uid": uid, "memoId": memoId, "title": title, "content": content, "updatedDate": updatedDate, "isFixed": isFixed]
+        let values: [String: Any] = ["uid": uid, "title": title, "content": content, "updatedDate": updatedDate, "isFixed": isFixed]
         
         childRef.updateChildValues(values) {(error, ref) in
             if error != nil {
@@ -99,15 +63,11 @@ class MemoDetailInteractor: MemoDetailBusinessLogic, MemoDetailDataStore {
                 return
             }
             
-            guard let memoId = childRef.key else { return }
-            print("메모저장 성공: \(memoId)")
+            guard let key = childRef.key else { return }
+            print("메모저장 성공: \(key)")
             self.presenter?.presentSaveSuccess()
             
         }
-//        let ref = Database.database().reference().child("user-memo").child(uid)
-//        ref.observe(.childAdded, with: { (snapshot) in
-//
-//        })
     }
     
 //    func doSomething(request: MemoDetail.저장.Request) {

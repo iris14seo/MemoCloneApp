@@ -19,6 +19,11 @@ protocol MemoDetailDisplayLogic: class {
 
 typealias MemoDetailPage = MemoDetailViewController
 class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
+    
+    enum BottomButtonMode {
+        case Save, Edit
+    }
+    
     var interactor: MemoDetailBusinessLogic?
     var router: (NSObjectProtocol & MemoDetailRoutingLogic & MemoDetailDataPassing)?
     
@@ -34,17 +39,16 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
         setup()
     }
     
-    private var memoData: MemoData?
+    private var myMemoData: MemoData?
     private var isNewMemo: Bool = true
-    private var key: String?
     
     init(data: MemoData) {
         //MARK: 커스톰 이니셜라이저 http://minsone.github.io/mac/ios/swift-initialization-summary
-        self.memoData = data
+        self.myMemoData = data
         self.isNewMemo = false
-        self.key = data.key
         
         super.init(nibName: nil, bundle: nil)
+        setup() // 필수!
     }
     
     // MARK: Setup
@@ -69,7 +73,10 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
         
         initStyle()
         dataBind()
+        setFirstResponder(isNewMemo: self.isNewMemo)
     }
+    
+    @IBOutlet weak var scrollView: UIScrollView!
     
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var contentTextView: UITextView!
@@ -81,10 +88,11 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
     private func initStyle() {
         view.do {
             $0.backgroundColor = getKeyColor()
-            
-            let downSwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeAction(_:)))
-            downSwipeGestureRecognizer.direction = .down
-            $0.addGestureRecognizer(downSwipeGestureRecognizer)
+        }
+        
+        scrollView.do {
+            $0.overrideUserInterfaceStyle = .light // 다크모드 대응
+            $0.delegate = self
         }
         
         titleTextField.do {
@@ -107,6 +115,15 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
             $0.backgroundColor = .clear
             $0.delegate = self
             $0.overrideUserInterfaceStyle = .light // 다크모드 대응
+            $0.keyboardDismissMode = .interactive
+        }
+        
+        editButton.do {
+            $0.isMultipleTouchEnabled = false
+        }
+        
+        saveButton.do {
+            $0.isMultipleTouchEnabled = false
         }
         
         initButton()
@@ -115,11 +132,29 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
     
     private func initButton() {
         if isNewMemo {
-            editButton.isHidden = true
-            saveButton.isHidden = false
+            showAndHideButton(mode: .Save)
         } else {
+            showAndHideButton(mode: .Edit)
+        }
+    }
+    
+    private func showAndHideButton(mode: BottomButtonMode) {
+        if mode == .Edit {
             editButton.isHidden = false
+            editButton.isUserInteractionEnabled = true
+            editButton.isEnabled = true
+            
             saveButton.isHidden = true
+            saveButton.isUserInteractionEnabled = false
+            saveButton.isEnabled = false
+        } else {
+            editButton.isHidden = true
+            editButton.isUserInteractionEnabled = false
+            editButton.isEnabled = false
+            
+            saveButton.isHidden = false
+            saveButton.isUserInteractionEnabled = true
+            saveButton.isEnabled = true
         }
     }
     
@@ -144,10 +179,8 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
         if isNewMemo {
             titleTextField.text = ""
             contentTextView.text = ""
-            
-            setNewMemo()
         } else {
-            guard let data = self.memoData else {
+            guard let data = self.myMemoData else {
                 return
             }
             
@@ -158,8 +191,10 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
         setTextViewPlaceHolder()
     }
     
-    private func setNewMemo() { //MARK: 네이밍 고민중
-        titleTextField.becomeFirstResponder()
+    private func setFirstResponder(isNewMemo: Bool) {
+        if isNewMemo {
+            titleTextField.becomeFirstResponder()
+        }
     }
     
     private func requestSaveMemoData() {
@@ -169,37 +204,30 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
         if let title = titleTextField.text, title.count > 0 {
             savedTitle = title.trimmingCharacters(in: .whitespaces)
         }
-        
         if let content = contentTextView.text, content.count > 0 {
             savedContent = content.trimmingCharacters(in: .whitespaces)
         }
+        let isFixed = myMemoData?.isFixed ?? false
+        let memoKey = myMemoData?.key
         
-        let memoData = MemoDetail.WrittenMemoData(title: savedTitle, content: savedContent, isFixed: false)
         var request = MemoDetail.저장.Request()
-        request.memoData = memoData
+        request.memoData = MemoDetail.WrittenMemoData(title: savedTitle, content: savedContent, isFixed: isFixed)
         
-        self.interactor?.requestSaveMemoData(request: request, key: "-MUnVOkwCzqu4TU_9mVP")
+        //MARK: [수정 예정] key nil로 넘겨도 됨. 후처리에서 신규/기존 메모 판단하여 저장함 <---- 안좋은 방식
+        self.interactor?.requestSaveMemoData(request: request, key: memoKey)
     }
     
     @IBAction func handleEditBTNTap(_ sender: Any) {
         titleTextField.isUserInteractionEnabled = true
         contentTextView.isEditable = true
         
-        editButton.isHidden = false
-        saveButton.isHidden = true
-        
         contentTextView.becomeFirstResponder()
+        
+        showAndHideButton(mode: .Save)
     }
     
     @IBAction func handleSaveBTNTap(_ sender: Any) {
         requestSaveMemoData()
-    }
-    
-    @objc func handleSwipeAction(_ sender: UISwipeGestureRecognizer) {
-        // down swipe -> keyboard hide
-        if sender.direction == .down {
-            self.view.endEditing(true)
-        }
     }
     
     // MARK: Do something
@@ -237,5 +265,20 @@ extension MemoDetailViewController: UITextViewDelegate {
         }
         
         return true
+    }
+    
+}
+
+extension MemoDetailViewController: UIScrollViewDelegate {
+//    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+//        if scrollView.contentOffset.y == 0 {
+//            self.view.endEditing(true)
+//        }
+//    }
+    //MARK: 투머치 자주 불림
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y <= 0 {
+            self.view.endEditing(true)
+        }
     }
 }
