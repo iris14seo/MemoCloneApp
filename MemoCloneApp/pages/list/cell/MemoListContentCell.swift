@@ -34,7 +34,7 @@ class MemoListContentCell: UITableViewCell {
 
         contentLabel.do {
             $0.text = ""
-            $0.font = .systemFont(ofSize: 13)
+            $0.font = .systemFont(ofSize: 12)
             $0.textColor = .darkGray
             $0.textAlignment = .left
         }
@@ -52,12 +52,35 @@ class MemoListContentCell: UITableViewCell {
             titleLabel.text = "제목 없음"
         }
         
-        if let content = content {
-            let contentWithDate = "\(savedDate)" + content //가공하기
-            contentLabel.text = contentWithDate
-        } else {
-            contentLabel.text = "\(savedDate) 내용 없음"
+        contentLabel.do {
+            let formatDate = getFomattedDate(date: savedDate)
+            let content = content ?? "내용 없음"
+            
+            let resultAttrText:NSMutableAttributedString = NSMutableAttributedString()
+            let att1 = NSAttributedString(string: "\(formatDate)",
+                                          attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 12),
+                                                       NSAttributedString.Key.foregroundColor: UIColor.darkGray])
+            let att2 = NSAttributedString(string: "  \(content)",
+                                          attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12),
+                                                       NSAttributedString.Key.foregroundColor: UIColor.darkGray])
+            resultAttrText.append(att1)
+            resultAttrText.append(att2)
+            $0.attributedText = resultAttrText
         }
+        
     }
     
+    private func getFomattedDate(date: Date?) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy. MM. dd."
+        dateFormatter.locale = Locale.init(identifier: "ko_KR")
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
+        
+        guard let date = date else {
+            return ""
+        }
+        
+        let savedDateFormat = dateFormatter.string(from: date)
+        return savedDateFormat
+    }
 }

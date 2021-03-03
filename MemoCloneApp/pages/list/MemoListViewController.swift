@@ -129,6 +129,10 @@ class MemoListViewController: UIViewController, MemoListDisplayLogic {
         self.totalCountLabel.text = "총 \(count)개"
     }
     
+    private func isFixedSection(section: Int) -> Bool {
+        return  section == 0 && !fixedMemoArray.isEmpty
+    }
+    
     @IBAction func handleWrtieDownBTNTap(_ sender: Any) {
         let destinationVc = MemoDetailViewController()
         self.navigationController?.pushViewController(destinationVc, animated: true)
@@ -197,16 +201,34 @@ class MemoListViewController: UIViewController, MemoListDisplayLogic {
     
 }
 
-extension MemoListViewController : UITableViewDataSource { //UIContextMenuInteractionDelegate
+extension MemoListViewController : UITableViewDataSource {
     
     // SECTION
     func numberOfSections(in tableView: UITableView) -> Int {
-        return totalSectionCount
+        
+        guard totalMemoArray.count > 0 else {
+            //데이터 없음
+            return 0
+        }
+        
+        var countSection = totalSectionCount
+        if fixedMemoArray.isEmpty {
+            countSection -= 1
+        } else if nonFixedMemoArray.isEmpty {
+            countSection -= 1
+        }
+        
+        return countSection
     }
     
     // CELL
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let dataArray = section == 0 ? fixedMemoArray : nonFixedMemoArray
+        guard totalMemoArray.count > 0 else {
+            //데이터 없음
+            return 0
+        }
+        
+        let dataArray = isFixedSection(section: section) ? fixedMemoArray : nonFixedMemoArray
         
         guard !dataArray.isEmpty  else {
             return 0
@@ -219,7 +241,7 @@ extension MemoListViewController : UITableViewDataSource { //UIContextMenuIntera
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = tableView.dequeueReusableHeaderFooterView(withIdentifier: sectionReuseIdentifier) as! MemoListSectionView
 
-        if section == 0 {
+        if isFixedSection(section: section) {
             view.updateSectionData(style: MemoListSectionStyle.FixVersion, isFolded: isFixedMemoFolded)
         } else {
             view.updateSectionData(style: MemoListSectionStyle.NormalVersion)
@@ -234,13 +256,13 @@ extension MemoListViewController : UITableViewDataSource { //UIContextMenuIntera
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
        
         // - empty
-        guard !totalMemoArray.isEmpty, totalMemoArray.count > indexPath.row else {
+        guard totalMemoArray.count > 0 else {
             return UITableViewCell()
         }
         
         // - 해당 셀
         var data: MemoData?
-        let dataArray = indexPath.section == 0 ? fixedMemoArray : nonFixedMemoArray
+        let dataArray = isFixedSection(section: indexPath.section) ? fixedMemoArray : nonFixedMemoArray
         
         guard !dataArray.isEmpty, dataArray.count > indexPath.row  else {
             return UITableViewCell()
@@ -259,7 +281,7 @@ extension MemoListViewController : UITableViewDelegate {
     // HEADER
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if fixedMemoArray.isEmpty {
-            // 고정 메모 1개도 없으면 섹션 다 없애기
+            // 고정 메모 1개도 없으면 섹션 헤더 다 없애기
             return 0
         } else {
             return sectionHeight
@@ -268,7 +290,7 @@ extension MemoListViewController : UITableViewDelegate {
     
     // CELL
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if isFixedMemoFolded, indexPath.section == 0 {
+        if isFixedMemoFolded && isFixedSection(section: indexPath.section) {
              return 0
         } else {
             return cellHeight
@@ -279,11 +301,11 @@ extension MemoListViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
         
-        guard totalMemoArray.count > indexPath.row else {
+        guard totalMemoArray.count > 0 else {
             return
         }
         
-        let dataArray = indexPath.section == 0 ? fixedMemoArray : nonFixedMemoArray
+        let dataArray = isFixedSection(section: indexPath.section) ? fixedMemoArray : nonFixedMemoArray
         
         guard dataArray.count > indexPath.row else {
             return
@@ -318,7 +340,7 @@ extension MemoListViewController : UITableViewDelegate {
             //Code I want to do here
         }
         contextItem.backgroundColor = UIColor.orange
-        contextItem.image = leadingSwipeActionsConfigurationForRowAt.section == 0 ? UIImage(systemName: "pin.slash") : UIImage(systemName: "pin")
+        contextItem.image = isFixedSection(section: leadingSwipeActionsConfigurationForRowAt.section) ? UIImage(systemName: "pin.slash") : UIImage(systemName: "pin")
         
         let swipeActions = UISwipeActionsConfiguration(actions: [contextItem])
         
@@ -341,7 +363,7 @@ extension MemoListViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
         guard let indexPath = configuration.identifier as? IndexPath else { return }
         
-        let dataArray = indexPath.section == 0 ? fixedMemoArray : nonFixedMemoArray
+        let dataArray = isFixedSection(section: indexPath.section) ? fixedMemoArray : nonFixedMemoArray
         
         guard dataArray.count > indexPath.row else {
             return
