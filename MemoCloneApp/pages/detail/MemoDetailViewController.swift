@@ -9,19 +9,20 @@
 //  you can apply clean architecture to your iOS and Mac projects,
 //  see http://clean-swift.com
 //
+//MARK: [추가예정 기능] 볼드체, 글자색상, 폰트 조정가능 액션시트 추가($0.addInteraction(UIContextMenuInteraction(delegate: self)) + 이미지 첨부 기능
 
 import UIKit
 
 protocol MemoDetailDisplayLogic: class {
-    func displaySaveSuccess()
-    func displaySaveFail()
+    func displayFetchData(viewModel: MemoDetail.데이터_패치.ViewModel)
+    func displaySaveData(viewModel: MemoDetail.저장.ViewModel)
 }
 
 typealias MemoDetailPage = MemoDetailViewController
 class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
     
     enum BottomButtonMode {
-        case Save, Edit
+        case 저장하기, 수정하기
     }
     
     var interactor: MemoDetailBusinessLogic?
@@ -41,15 +42,6 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
     
     private var myMemoData: MemoData?
     private var isNewMemo: Bool = true
-    
-    init(data: MemoData) {
-        //MARK: 커스톰 이니셜라이저 http://minsone.github.io/mac/ios/swift-initialization-summary
-        self.myMemoData = data
-        self.isNewMemo = false
-        
-        super.init(nibName: nil, bundle: nil)
-        setup() // 필수!
-    }
     
     // MARK: Setup
     
@@ -72,8 +64,7 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
         super.viewDidLoad()
         
         initStyle()
-        dataBind()
-        setFirstResponder(isNewMemo: self.isNewMemo)
+        fetchMemoData()
     }
     
     @IBOutlet weak var scrollView: UIScrollView!
@@ -125,42 +116,6 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
         saveButton.do {
             $0.isMultipleTouchEnabled = false
         }
-        
-        initButton()
-        initInteraction()
-    }
-    
-    private func initButton() {
-        if isNewMemo {
-            showAndHideButton(mode: .Save)
-        } else {
-            showAndHideButton(mode: .Edit)
-        }
-    }
-    
-    private func showAndHideButton(mode: BottomButtonMode) {
-        if mode == .Edit {
-            editButton.isHidden = false
-            editButton.isUserInteractionEnabled = true
-            editButton.isEnabled = true
-            
-            saveButton.isHidden = true
-            saveButton.isUserInteractionEnabled = false
-            saveButton.isEnabled = false
-        } else {
-            editButton.isHidden = true
-            editButton.isUserInteractionEnabled = false
-            editButton.isEnabled = false
-            
-            saveButton.isHidden = false
-            saveButton.isUserInteractionEnabled = true
-            saveButton.isEnabled = true
-        }
-    }
-    
-    private func initInteraction() {
-        titleTextField.isUserInteractionEnabled = isNewMemo
-        contentTextView.isEditable = isNewMemo
     }
     
     private func setTextViewPlaceHolder() {
@@ -174,30 +129,25 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
             self.contentTextView.textColor = .lightGray
         }
     }
-   
-    private func dataBind() {
-        if isNewMemo {
-            titleTextField.text = ""
-            contentTextView.text = ""
-        } else {
-            guard let data = self.myMemoData else {
-                return
-            }
-            
-            titleTextField.text = data.title
-            contentTextView.text = data.content
-        }
+    
+    @IBAction func handleEditBTNTap(_ sender: Any) {
+        titleTextField.isUserInteractionEnabled = true
+        contentTextView.isEditable = true
         
-        setTextViewPlaceHolder()
+        contentTextView.becomeFirstResponder()
+        
+        showAndHideButton(mode: .저장하기)
     }
     
-    private func setFirstResponder(isNewMemo: Bool) {
-        if isNewMemo {
-            titleTextField.becomeFirstResponder()
-        }
+    @IBAction func handleSaveBTNTap(_ sender: Any) {
+        requestSaveMemoData()
     }
     
-    private func requestSaveMemoData() {
+    func fetchMemoData() {
+        self.interactor?.fetchMemoData()
+    }
+    
+    func requestSaveMemoData() {
         var savedTitle: String?
         var savedContent: String?
         
@@ -217,30 +167,84 @@ class MemoDetailViewController: UIViewController, MemoDetailDisplayLogic {
         self.interactor?.requestSaveMemoData(request: request, key: memoKey)
     }
     
-    @IBAction func handleEditBTNTap(_ sender: Any) {
-        titleTextField.isUserInteractionEnabled = true
-        contentTextView.isEditable = true
-        
-        contentTextView.becomeFirstResponder()
-        
-        showAndHideButton(mode: .Save)
-    }
-    
-    @IBAction func handleSaveBTNTap(_ sender: Any) {
-        requestSaveMemoData()
-    }
-    
     // MARK: Do something
-    
-    func displaySaveSuccess() {
-        let saveAction = UIAlertAction(title: "OK", style: .default) { (action) in
-            self.router?.routeToListPage()
+    func displayFetchData(viewModel: MemoDetail.데이터_패치.ViewModel) {
+        self.isNewMemo = viewModel.isNewMemo
+        
+        if let data = viewModel.memoData {
+            self.myMemoData = data
         }
-        showOKAlert(vc: self, title: "저장 성공", message: "메모가 성공적으로 저장되었습니다.", okAction: saveAction)
+        
+        updateData(isNewMemo: self.isNewMemo, detailMemoData: self.myMemoData)
+        updateFirstResponder(isNewMemo: self.isNewMemo)
+        updateButton(isNewMemo: self.isNewMemo)
+        updateInteraction(isNewMemo: self.isNewMemo)
     }
     
-    func displaySaveFail() {
-        showOKAlert(vc: self, title: "저장 실패", message: "에러가 발생하여 저장이 실패하였습니다.")
+    func displaySaveData(viewModel: MemoDetail.저장.ViewModel) {
+        if viewModel.isSaveSuccess {
+            let saveAction = UIAlertAction(title: "OK", style: .default) { (action) in
+                self.router?.routeToBackPage()
+            }
+            showOKAlert(vc: self, title: "저장 성공", message: "메모가 성공적으로 저장되었습니다.", okAction: saveAction)
+        } else {
+            showOKAlert(vc: self, title: "저장 실패", message: "에러가 발생하여 저장이 실패하였습니다.")
+        }
+    }
+    
+    private func updateData(isNewMemo: Bool, detailMemoData: MemoData?) {
+        if isNewMemo {
+            titleTextField.text = ""
+            contentTextView.text = ""
+        } else {
+            guard let data = detailMemoData else {
+                return
+            }
+            
+            titleTextField.text = data.title
+            contentTextView.text = data.content
+        }
+        
+        setTextViewPlaceHolder()
+    }
+    
+    private func updateFirstResponder(isNewMemo: Bool) {
+        if isNewMemo {
+            titleTextField.becomeFirstResponder()
+        }
+    }
+    
+    private func updateInteraction(isNewMemo: Bool) {
+        titleTextField.isUserInteractionEnabled = isNewMemo
+        contentTextView.isEditable = isNewMemo
+    }
+    
+    private func updateButton(isNewMemo: Bool) {
+        if isNewMemo {
+            showAndHideButton(mode: .저장하기)
+        } else {
+            showAndHideButton(mode: .수정하기)
+        }
+    }
+    
+    private func showAndHideButton(mode: BottomButtonMode) {
+        if mode == .수정하기 {
+            editButton.isHidden = false
+            editButton.isUserInteractionEnabled = true
+            editButton.isEnabled = true
+            
+            saveButton.isHidden = true
+            saveButton.isUserInteractionEnabled = false
+            saveButton.isEnabled = false
+        } else {
+            editButton.isHidden = true
+            editButton.isUserInteractionEnabled = false
+            editButton.isEnabled = false
+            
+            saveButton.isHidden = false
+            saveButton.isUserInteractionEnabled = true
+            saveButton.isEnabled = true
+        }
     }
     
 }
@@ -270,11 +274,6 @@ extension MemoDetailViewController: UITextViewDelegate {
 }
 
 extension MemoDetailViewController: UIScrollViewDelegate {
-//    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-//        if scrollView.contentOffset.y == 0 {
-//            self.view.endEditing(true)
-//        }
-//    }
     //MARK: 투머치 자주 불림
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y <= 0 {

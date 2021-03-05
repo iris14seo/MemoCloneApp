@@ -13,7 +13,7 @@
 import UIKit
 
 @objc protocol MemoDetailRoutingLogic {
-    func routeToListPage()
+    func routeToBackPage()
 }
 
 protocol MemoDetailDataPassing {
@@ -26,8 +26,13 @@ class MemoDetailRouter: NSObject, MemoDetailRoutingLogic, MemoDetailDataPassing 
     
     // MARK: Routing
     
-    func routeToListPage() {
+    func routeToBackPage() {
         print("List 페이지로 돌아가기")
-        viewController?.navigationController?.popViewController(animated: true)
+        navigateToBackPage(source: viewController!)
+    }
+    
+    // MARK: Navigation
+    func navigateToBackPage(source: MemoDetailPage) {
+        source.navigationController?.popViewController(animated: true)
     }
 }

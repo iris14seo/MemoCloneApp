@@ -319,7 +319,7 @@ extension MemoListViewController : UITableViewDelegate {
         }
         
         self.selecteMemoKey = dataArray[indexPath.row].key
-        self.router?.routeToMemoDetailPage()
+        self.router?.routeToMemoDetailPageWithData()
     }
     
     // CELL
@@ -409,7 +409,7 @@ extension MemoListViewController : UITableViewDelegate {
         
         animator.addAnimations {
             self.selecteMemoKey = dataArray[indexPath.row].key
-            self.router?.routeToMemoDetailPage()
+            self.router?.routeToMemoDetailPageWithData()
         }
     }
     

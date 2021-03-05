@@ -14,6 +14,7 @@ import UIKit
 
 @objc protocol MemoListRoutingLogic {
     func routeToMemoDetailPage()
+    func routeToMemoDetailPageWithData()
     //MARK: 매개변수(_ memoData: MemoData?)
     // -> [에러] @objc protocol protocol + method cannot be a memober
     //func routeToMemoDetailPage(_ memoData: Any?) //func routeToMemoDetailPage(_ memoData: NSObject?)
@@ -34,6 +35,15 @@ class MemoListRouter: NSObject, MemoListRoutingLogic, MemoListDataPassing {
         
         let destinationVC = MemoDetailPage()
         var destinationDS = destinationVC.router!.dataStore!
+        passDataToDetail(source: dataStore!, destination: &destinationDS)
+        navigateToDetail(source: viewController!, destination: destinationVC)
+    }
+    
+    func routeToMemoDetailPageWithData() {
+        print("Memo Detail 페이지로 이동")
+        
+        let destinationVC = MemoDetailPage()
+        var destinationDS = destinationVC.router!.dataStore!
         passMemoDataToDetail(source: dataStore!, destination: &destinationDS)
         navigateToDetail(source: viewController!, destination: destinationVC)
     }
@@ -44,6 +54,10 @@ class MemoListRouter: NSObject, MemoListRoutingLogic, MemoListDataPassing {
     }
     
     // MARK: Passing data
+    func passDataToDetail(source: MemoListDataStore, destination: inout MemoDetailDataStore) {
+        destination.uid = source.uid
+    }
+    
     func passMemoDataToDetail(source: MemoListDataStore, destination: inout MemoDetailDataStore) {
         guard let key = viewController?.selecteMemoKey else { //MARK: 데이터 넘기는 다른 방법 찾기
             return

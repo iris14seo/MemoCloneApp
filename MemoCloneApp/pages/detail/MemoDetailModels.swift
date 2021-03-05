@@ -13,21 +13,35 @@
 import UIKit
 
 enum MemoDetail {
+    struct WrittenMemoData {
+        var title: String?
+        var content: String?
+        var isFixed: Bool
+    }
     
     // MARK: Use cases
+    enum 데이터_패치 {
+        struct Request {
+        }
+        struct Response {
+            var isNewMemo: Bool
+            var memoData: MemoData?
+        }
+        struct ViewModel {
+            var isNewMemo: Bool
+            var memoData: MemoData?
+        }
+    }
+    
     enum 저장 {
         struct Request {
             var memoData: WrittenMemoData?
         }
         struct Response {
+            var isSaveSuccess: Bool
         }
         struct ViewModel {
+            var isSaveSuccess: Bool
         }
-    }
-    
-    struct WrittenMemoData {
-        var title: String?
-        var content: String?
-        var isFixed: Bool
     }
 }

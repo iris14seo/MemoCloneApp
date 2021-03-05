@@ -12,8 +12,10 @@
 
 import UIKit
 import Firebase
+import FirebaseAuth
 
 protocol MemoDetailBusinessLogic {
+    func fetchMemoData()
     func requestSaveMemoData(request: MemoDetail.저장.Request, key: String?)
 }
 
@@ -24,57 +26,29 @@ extension MemoDetailBusinessLogic {
 }
 
 protocol MemoDetailDataStore {
+    var uid: String? { get set }
+    var memoData: MemoData? { get set }
 }
 
 class MemoDetailInteractor: MemoDetailBusinessLogic, MemoDetailDataStore {
     var presenter: MemoDetailPresentationLogic?
-    var worker: MemoDetailWorker?
+    var worker = MemoDetailWorker()
+    var uid: String?
+    var memoData: MemoData?
         
     // MARK: Do something
-    
-    func requestSaveMemoData(request: MemoDetail.저장.Request, key: String? = nil) {
-        guard let memoData = request.memoData else {
-            return
-        }
-        
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
-        
-        let ref = Database.database().reference().child("user-memo")
-        var childRef = DatabaseReference()
-        if let key = key {
-            childRef = ref.child(uid).child(key)
-        } else {
-            childRef = ref.child(uid).childByAutoId()
-        }
-        
-        // child properties
-        let title = memoData.title ?? ""
-        let content = memoData.content ?? ""
-        let isFixed = memoData.isFixed
-        let updatedDate = Int(Date().timeIntervalSince1970)
-        let values: [String: Any] = ["uid": uid, "title": title, "content": content, "updatedDate": updatedDate, "isFixed": isFixed]
-        
-        childRef.updateChildValues(values) {(error, ref) in
-            if error != nil {
-                print("메모저장 실패:", error!)
-                self.presenter?.presentSaveFail()
-                return
-            }
-            
-            guard let key = childRef.key else { return }
-            print("메모저장 성공: \(key)")
-            self.presenter?.presentSaveSuccess()
-            
-        }
+    func fetchMemoData() {
+        let isNewMemo: Bool = self.memoData == nil ? true : false
+        self.presenter?.presentFetchData(response: MemoDetail.데이터_패치.Response(isNewMemo: isNewMemo, memoData: self.memoData))
     }
     
-//    func doSomething(request: MemoDetail.저장.Request) {
-//        worker = MemoDetailWorker()
-//        worker?.doSomeWork()
-//
-//        let response = MemoDetail.Something.Response()
-//        presenter?.presentSomething(response: response)
-//    }
+    func requestSaveMemoData(request: MemoDetail.저장.Request, key: String? = nil) {
+        worker.saveMemo(uid: self.uid, memoData: request.memoData, key: key, completionHandler: {(ref, error) in
+            if error != nil {
+                self.presenter?.presentSave(response: .init(isSaveSuccess: false))
+            } else {
+                self.presenter?.presentSave(response: .init(isSaveSuccess: true))
+            }
+        })
+    }
 }

@@ -13,20 +13,20 @@
 import UIKit
 
 protocol MemoDetailPresentationLogic {
-    func presentSaveSuccess()
-    func presentSaveFail()
+    func presentFetchData(response: MemoDetail.데이터_패치.Response)
+    func presentSave(response: MemoDetail.저장.Response)
 }
 
 class MemoDetailPresenter: MemoDetailPresentationLogic {
     weak var viewController: MemoDetailDisplayLogic?
     
     // MARK: Do something
-    
-    func presentSaveSuccess() {
-        viewController?.displaySaveSuccess()
+
+    func presentFetchData(response: MemoDetail.데이터_패치.Response) {
+        viewController?.displayFetchData(viewModel: MemoDetail.데이터_패치.ViewModel(isNewMemo: response.isNewMemo, memoData: response.memoData))
     }
     
-    func presentSaveFail() {
-        viewController?.displaySaveFail()
+    func presentSave(response: MemoDetail.저장.Response) {
+        viewController?.displaySaveData(viewModel: MemoDetail.저장.ViewModel(isSaveSuccess: response.isSaveSuccess))
     }
 }

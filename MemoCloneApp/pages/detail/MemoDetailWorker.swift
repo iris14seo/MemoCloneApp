@@ -11,8 +11,94 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseAuth
+import FirebaseDatabase
 
-class MemoDetailWorker {
-    func doSomeWork() {
+typealias SaveMemoCompletionHandler = (APIResult<DatabaseReference?>) -> Void
+protocol MemoDetailProtocol {
+    func saveMemo(uid: String?, memoData: MemoDetail.WrittenMemoData?, key: String?, completionHandler: @escaping (DatabaseReference?, CustomError?) -> Void)
+    func saveMemo(uid: String?, memoData: MemoDetail.WrittenMemoData?, key: String?,  completionHandler: @escaping SaveMemoCompletionHandler)
+}
+
+extension MemoDetailProtocol {
+    func saveMemo(uid: String?, memoData: MemoDetail.WrittenMemoData?, key: String? = nil, completionHandler: @escaping (DatabaseReference?, CustomError?) -> Void) {
+        saveMemo(uid: uid, memoData: memoData, key: key, completionHandler: completionHandler)
+    }
+    
+    func saveMemo(uid: String?, memoData: MemoDetail.WrittenMemoData?, key: String? = nil, completionHandler: @escaping SaveMemoCompletionHandler) {
+        saveMemo(uid: uid, memoData: memoData, key: key, completionHandler: completionHandler)
+    }
+}
+
+class MemoDetailWorker: MemoDetailProtocol {
+    private let momoDataNode: String = "user-memo"
+    
+    func saveMemo(uid: String?, memoData: MemoDetail.WrittenMemoData?, key: String?, completionHandler: @escaping (DatabaseReference?, CustomError?) -> Void) {
+        guard let uid = uid,
+              let memoData = memoData else {
+            return
+        }
+        
+        let ref = Database.database().reference().child(momoDataNode)
+        var childRef = DatabaseReference()
+        if let key = key {
+            childRef = ref.child(uid).child(key)
+        } else {
+            childRef = ref.child(uid).childByAutoId()
+        }
+        
+        // child properties
+        let title = memoData.title ?? ""
+        let content = memoData.content ?? ""
+        let isFixed = memoData.isFixed
+        let updatedDate = Int(Date().timeIntervalSince1970)
+        let values: [String: Any] = ["uid": uid, "title": title, "content": content, "updatedDate": updatedDate, "isFixed": isFixed]
+        
+        childRef.updateChildValues(values) {(error, ref) in
+            if error != nil {
+                completionHandler(nil, CustomError(errorCode: "9", errorMsg: "메모 저장 실패"))
+                return
+            }
+            
+            guard let key = childRef.key else { return }
+            print("메모저장 성공: \(key)")
+            
+            completionHandler(ref, nil)
+        }
+    }
+    
+    func saveMemo(uid: String?, memoData: MemoDetail.WrittenMemoData?, key: String?, completionHandler: @escaping SaveMemoCompletionHandler) {
+        guard let uid = uid,
+              let memoData = memoData else {
+            return
+        }
+        
+        let ref = Database.database().reference().child(momoDataNode)
+        var childRef = DatabaseReference()
+        if let key = key {
+            childRef = ref.child(uid).child(key)
+        } else {
+            childRef = ref.child(uid).childByAutoId()
+        }
+        
+        // child properties
+        let title = memoData.title ?? ""
+        let content = memoData.content ?? ""
+        let isFixed = memoData.isFixed
+        let updatedDate = Int(Date().timeIntervalSince1970)
+        let values: [String: Any] = ["uid": uid, "title": title, "content": content, "updatedDate": updatedDate, "isFixed": isFixed]
+        
+        childRef.updateChildValues(values) {(error, ref) in
+            if error != nil {
+                completionHandler(APIResult.Failure(error: CustomError(errorCode: "9", errorMsg: "메모 저장 실패")))
+                return
+            }
+            
+            guard let key = childRef.key else { return }
+            print("메모저장 성공: \(key)")
+            
+            completionHandler(APIResult.Success(result: ref))
+        }
     }
 }
