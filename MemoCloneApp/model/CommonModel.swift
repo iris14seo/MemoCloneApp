@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-public struct MemoData {
+public struct MemoData: Equatable {
     var uid: String?
     var key: String?
     var title: String?
@@ -24,4 +24,9 @@ public struct MemoData {
         self.updatedDate = Date(timeIntervalSince1970: epocTime)
         self.isFixed = dictionary["isFixed"] as! Bool
     }
+}
+
+public struct User: Equatable {
+    var uid: String?
+    var email: String?
 }
