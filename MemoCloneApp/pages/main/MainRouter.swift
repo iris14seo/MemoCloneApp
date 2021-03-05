@@ -13,7 +13,6 @@
 import UIKit
 
 @objc protocol MainRoutingLogic {
-    func routeToIntroGuidePage()
     func routeToMemoListPage()
 }
 
@@ -26,16 +25,6 @@ class MainRouter: NSObject, MainRoutingLogic, MainDataPassing {
     var dataStore: MainDataStore?
     
     // MARK: Routing
-    func routeToIntroGuidePage() {
-        print("Intro 페이지로 이동")
-        
-        let destinationVC = IntroGuidePage()
-        destinationVC.modalTransitionStyle = .coverVertical
-        destinationVC.modalPresentationStyle = .overFullScreen
-        
-        viewController?.present(destinationVC, animated: true, completion: nil)
-    }
-    
     func routeToMemoListPage() {
         print("Memo List 페이지로 이동")
         

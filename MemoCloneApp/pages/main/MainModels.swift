@@ -13,44 +13,65 @@
 import UIKit
 
 enum Main {
-    // MARK: Use cases - 처음 진입한 앱 여부 한단
+    struct UserAccount {
+        var id: String
+        var pw: String
+    }
+    
+    struct SignInStatus {
+        var status: Bool
+        var currentUserId: String? //currentUserId == email
+    }
+    
+    // MARK: Use case - 앱진입시 자동 로그인 시도
     enum 앱진입 {
         struct Request {
         }
         struct Response  {
-            var isFirstLaunch: Bool?
-            var isAutoSinInSuccess: Bool?
-            var currentUserId: String?
+            var autoSign: Main.SignInStatus
         }
         struct ViewModel {
-            var isFirstLaunch: Bool?
-            var isAutoSinInSuccess: Bool?
-            var currentUserId: String?
-        }
-    }
-    // MARK: Use cases - 회원가입 하기
-    enum 회원가입 {
-        struct Request {
-        }
-        struct Response  {
-            var hasCurrentUser: Bool? //자동 로그인된 상태
-            var currentUserId: String?
-        }
-        struct ViewModel {
-            var hasCurrentUser: Bool? //자동 로그인된 상태
-            var currentUserId: String?
-        }
-    }
-    // MARK: Use cases - 로그인 하기
-    enum 로그인 {
-        struct Request {
-        }
-        struct Response  {
-            var currentUserId: String?
-        }
-        struct ViewModel {
-            var currentUserId: String?
+            var autoSign: Main.SignInStatus
         }
     }
     
+    // MARK: Use case - 로그인 하기
+    enum 로그인 {
+        struct Request {
+            var userAccount: UserAccount
+        }
+        struct Response  {
+            var signIn: Main.SignInStatus?
+        }
+        struct ViewModel {
+            var signIn: Main.SignInStatus?
+        }
+    }
+    
+    // MARK: Use case - 로그아웃 하기
+    enum 로그아웃 {
+        struct Request {
+        }
+        struct Response  {
+            var signOut: Bool
+        }
+        struct ViewModel {
+            var signOut: Bool
+        }
+    }
+    
+    // MARK: Use case - 회원가입 하기(파이어베이스에서는 회원가입 후 자동 로그인됨)
+    enum 회원가입 {
+        struct Request {
+            var userAccount: UserAccount
+        }
+        struct Response  {
+            var isRegisterSuccess: Bool
+            var signIn: Main.SignInStatus? //MARK: 네이밍 고민중...
+        }
+        struct ViewModel {
+            var isRegisterSuccess: Bool
+            var signIn: Main.SignInStatus?
+        }
+    }
 }

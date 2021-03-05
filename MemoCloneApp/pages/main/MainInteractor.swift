@@ -13,12 +13,14 @@
 import UIKit
 import Firebase
 import FirebaseDatabase
+import FirebaseAuth
+//import RxSwift
 
 protocol MainBusinessLogic {
-    func registerUser(id: String, pw: String)
-    func signInUser(id: String, pw: String)
+    func requestAutoSignIn()
+    func signInUser(request: Main.로그인.Request)
     func signOut()
-    func checkIsFirstLaunch()
+    func registerUser(request: Main.회원가입.Request)
 }
 
 protocol MainDataStore {
@@ -27,131 +29,79 @@ protocol MainDataStore {
 
 class MainInteractor: MainBusinessLogic, MainDataStore {
     var presenter: MainPresentationLogic?
-    var worker: MainWorker?
+    var worker = MainWorker()
+    
+    //let disposeBag = DisposeBag() //MARK: 나중에 회원가입쪽 flatMap으로 바꾸기
     
     // MARK: Do something
     
-    func registerUser(id: String, pw: String) {
-        Auth.auth().createUser(withEmail: id, password: pw) {(authResult, error) in
-            //회원가입
-            if let error = error {
-                print("createUser 에러: \(error.localizedDescription)\n\n")
-                self.presenter?.presentRegisterFail()
-                return
-            }
-            
-            guard let user = authResult?.user else { return }
-            
-            print("createUser 회원가입 성공: \(user)")
-            
-            var response = Main.회원가입.Response()
-            if let user = Auth.auth().currentUser {
-                //자동 로그인
-                print("자동 로그인 성공")
-                response.hasCurrentUser = true
-                response.currentUserId = user.email
-                
+    func requestAutoSignIn() {
+        worker.requestAutoSignIn() {(user: User?, error: CustomError?) -> Void in
+            //자동 로그인
+            if let user = user {
+                // -성공
+                self.presenter?.presentAutoSignIn(response: Main.앱진입.Response.init(autoSign: Main.SignInStatus.init(status: true, currentUserId: user.email)))
             } else {
-                print("자동 로그인 실패")
-                response.hasCurrentUser = false
-                response.currentUserId = ""
+                // -실패
+                self.presenter?.presentAutoSignIn(response: Main.앱진입.Response.init(autoSign: Main.SignInStatus.init(status: false)))
             }
-            
-            self.presenter?.presentRegisterSuccess(response: response)
-            
-            //디비 정보저장
-            //DB에 구조 생성: DB > users > uid > detail user information(id, email, pw)
-            /*guard let uid = authResult?.user.uid else { return }
-            
-            let ref = Database.database().reference()
-            let userReference = ref.child("users").child(uid)
-            let values = ["email": id, "password": pw]
-            
-            userReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
-                if let err = err {
-                    print("updateChildValues 에러: \(err)\n\n")
-                    return
-                }
-                
-                print("updateChildValues 회원정보 DB 저장 성공")
-            })*/
         }
     }
     
-    func signInUser(id: String, pw: String) {
-        Auth.auth().signIn(withEmail: id, password: pw) {
-            (authResult, err) in
+    func registerUser(request: Main.회원가입.Request) {
+        worker.registerUser(id: request.userAccount.id, pw: request.userAccount.pw, completionHandler: { (authResult, error) -> Void in
+            //회원가입
+            // -실패
+            guard error == nil else {
+                self.presenter?.presentRegister(response: Main.회원가입.Response.init(isRegisterSuccess: false))
+                return
+            }
+            
+            // -성공
+            guard let authUser = authResult?.user else { return }
+            print("\(authUser)님 회원가입 완료")
+            
+            //자동 로그인
+            self.worker.requestAutoSignIn() {(user: User?, error: CustomError?) -> Void in
+                if let user = user {
+                    self.presenter?.presentRegister(response: .init(isRegisterSuccess: true, signIn: Main.SignInStatus.init(status: true, currentUserId: user.email)))
+                } else {
+                    self.presenter?.presentRegister(response: .init(isRegisterSuccess: true))
+                }
+            }
+        })
+    }
+    
+    func signInUser(request: Main.로그인.Request) {
+        worker.signInUser(id: request.userAccount.id, pw: request.userAccount.pw, completionHandler: {(authResult, error) -> Void in
+            //로그인
+            var response = Main.로그인.Response()
             
             guard let user = authResult?.user else {
-                if let err = err {
-                    print("signIn 로그인 실패: \(err.localizedDescription)")
-                    self.presenter?.presentSignInFail()
+                if error != nil {
+                    // -실패
+                    response.signIn = Main.SignInStatus(status: false)
+                    self.presenter?.presentSignIn(response: response)
                 }
                 return
             }
             
-            print("signIn 로그인 성공: \(user)")
-            
-            var response = Main.로그인.Response()
-            response.currentUserId = user.email
-            self.presenter?.presentSignInSuccess(response: response)
-        }
+            // -성공
+            response.signIn = Main.SignInStatus(status: true, currentUserId: user.email)
+            self.presenter?.presentSignIn(response: response)
+        })
     }
     
     func signOut() {
-        do {
-            try Auth.auth().signOut()
-            print ("signing out 성꽁")
-            self.presenter?.presentSignOutSuccess()
-            
-        } catch let signOutError as NSError {
-            print ("signing out 에러: \(signOutError)")
-            self.presenter?.presentSignOutFail()
-        }
-    }
-    
-    func checkIsFirstLaunch() {
-        let hasFirstLaunch = UserDefaults.standard.bool(forKey: "isFirstLaunch") as Bool
-        var response = Main.앱진입.Response()
-        
-        //앱 첫런치
-        if hasFirstLaunch {
-            //계속 실행됨
-            response.isFirstLaunch = false
-        } else {
-            //앱 초기 런칭시 한번만 실행됨
-            setFirstLaunchUserDefault()
-            response.isFirstLaunch = true
-        }
-        
-        //자동 로그인 상태
-        if let autoSignIn: AutoSignIn = self.checkAutoSignIn() {
-            response.isAutoSinInSuccess = autoSignIn.isSuccess
-            response.currentUserId = autoSignIn.currentUserId
-        } else {
-            response.isAutoSinInSuccess = false
-        }
-        
-        presenter?.presentMainPage(response: response)
-    }
-    
-    private func checkAutoSignIn() -> AutoSignIn? {
-        if let user = Auth.auth().currentUser {
-            print("자동 로그인 성공 checkAutoSignIn")
-            return AutoSignIn(isSuccess: true, currentUserId: user.email)
-            
-        } else {
-            print("자동 로그인 실패 checkAutoSignIn")
-            return AutoSignIn(isSuccess: false)
-        }
-    }
-    
-    private func setFirstLaunchUserDefault() {
-        UserDefaults.standard.set(true, forKey: "isFirstLaunch")
-    }
-    
-    struct AutoSignIn {
-        var isSuccess: Bool
-        var currentUserId: String?
+        worker.signOut(completionHandler: {(isSignOuted, error) in
+            //로그아웃
+            if isSignOuted {
+                // -성공
+                self.presenter?.presentSignOut(response: Main.로그아웃.Response.init(signOut: true))
+            } else {
+                // -실패
+                self.presenter?.presentSignOut(response: Main.로그아웃.Response.init(signOut: false))
+            }
+        })
     }
 }

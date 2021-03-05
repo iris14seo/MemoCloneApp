@@ -16,13 +16,10 @@ import UIKit
 import Firebase
 
 protocol MainDisplayLogic: class {
-    func displayStartPage(viewModel: Main.앱진입.ViewModel)
-    func displayRegisterSuccess(viewModel: Main.회원가입.ViewModel)
-    func displayRegisterFail()
-    func displaySignInSuccess(viewModel: Main.로그인.ViewModel)
-    func displaySignInFail()
-    func displaySignOutSuccess()
-    func displaySignOutFail()
+    func displayAutoSignIn(viewModel: Main.앱진입.ViewModel)
+    func displaySignIn(viewModel: Main.로그인.ViewModel)
+    func displaySignOut(viewModel: Main.로그아웃.ViewModel)
+    func displayRegister(viewModel: Main.회원가입.ViewModel)
 }
 
 typealias MainPage = MainViewController
@@ -76,7 +73,6 @@ class MainViewController: UIViewController, MainDisplayLogic {
         
         initStyle()
         setNavigationBar(navigationItem: self.navigationItem, navigationController: self.navigationController)
-        checkIsFirstLaunch()
     }
     
     private func initStyle() {
@@ -141,7 +137,7 @@ class MainViewController: UIViewController, MainDisplayLogic {
             return
         }
         
-        self.interactor?.signInUser(id: id, pw: pw)
+        self.interactor?.signInUser(request: Main.로그인.Request.init(userAccount: Main.UserAccount.init(id: id, pw: pw)))
     }
     
     @IBAction func handleSignOutBTNTap(_ sender: Any) {        
@@ -181,7 +177,7 @@ class MainViewController: UIViewController, MainDisplayLogic {
             }
             self.view.endEditing(true)
             
-            self.interactor?.registerUser(id: id, pw: pw)
+            self.interactor?.registerUser(request: Main.회원가입.Request.init(userAccount: Main.UserAccount.init(id: id, pw: pw)))
         }
         
         registerAlert.addAction(cancelAction)
@@ -217,67 +213,54 @@ class MainViewController: UIViewController, MainDisplayLogic {
     }
     
     // MARK: Do something
-    
-    func checkIsFirstLaunch() {
-        interactor?.checkIsFirstLaunch()
-    }
-    
-    func displayStartPage(viewModel: Main.앱진입.ViewModel) {
-        guard let isFirstLaunch = viewModel.isFirstLaunch else {
+    func displayAutoSignIn(viewModel: Main.앱진입.ViewModel) {
+        guard viewModel.autoSign.status else {
+            //자동 로그인 실패
+            hideUserView()
             return
         }
-                
-        switch isFirstLaunch {
-        case true:
-            print("앱 처음 설치")
-            hideUserView()
-            router?.routeToIntroGuidePage()
-            
-        case false:
-            print("앱 첫 설치 아님")
-            if viewModel.isAutoSinInSuccess == true {
-                showUserView(userId: viewModel.currentUserId)
-            } else {
-                hideUserView()
-            }
-        }
+        
+        //자동 로그인 성공
+        showUserView(userId: viewModel.autoSign.currentUserId)
     }
     
-    func displayRegisterSuccess(viewModel: Main.회원가입.ViewModel) {
-        guard let hasCurrentUser = viewModel.hasCurrentUser, hasCurrentUser == true else {
+    func displaySignIn(viewModel: Main.로그인.ViewModel) {
+        guard viewModel.signIn?.status == true else {
+            showOKAlert(vc: self, title: "로그인 실패", message: "아이디 혹은 비밀번호가 일치하지 않습니다.")
+            hideUserView()
+            return
+        }
+        
+        showUserView(userId: viewModel.signIn?.currentUserId)
+    }
+    
+    func displaySignOut(viewModel: Main.로그아웃.ViewModel) {
+        guard viewModel.signOut else {
+            showOKAlert(vc: self, title: "로그아웃 실패", message: "에러가 발생하였습니다.")
+            hideUserView()
+            return
+        }
+        
+        showOKAlert(vc: self, title: "로그아웃 성공", message: "이용해주셔서 감사합니다.")
+        hideUserView()
+    }
+    
+    func displayRegister(viewModel: Main.회원가입.ViewModel) {
+        guard viewModel.isRegisterSuccess else {
+            //회원가입 실패
+            showOKAlert(vc: self, title: "회원가입 실패", message: "에러가 발생하였습니다.")
+            hideUserView()
+            return
+        }
+        
+        guard let signIn = viewModel.signIn, signIn.status else {
+            //회원가입 성공후, 자동 로그인 실패
             showOKAlert(vc: self, title: "자동 로그인 실패", message: "직접 아이디와 비밀번호를 입력해주세요.")
             hideUserView()
             return
         }
         
-        //회원가입시 자동으로 로그인됨
-        let userId = viewModel.currentUserId
-        showUserView(userId: userId)
+        //자동 로그인 성공
+        showUserView(userId: signIn.currentUserId)
     }
-    
-    func displayRegisterFail() {
-        showOKAlert(vc: self, title: "회원가입 실패", message: "에러가 발생하였습니다.")
-        hideUserView()
-    }
-    
-    func displaySignInSuccess(viewModel: Main.로그인.ViewModel) {
-        let userId = viewModel.currentUserId
-        showUserView(userId: userId)
-    }
-    
-    func displaySignInFail() {
-        showOKAlert(vc: self, title: "로그인 실패", message: "아이디 혹은 비밀번호가 일치하지 않습니다.")
-        hideUserView()
-    }
-    
-    func displaySignOutSuccess() {
-        showOKAlert(vc: self, title: "로그아웃 성공", message: "이용해주셔서 감사합니다.")
-        hideUserView()
-    }
-    
-    func displaySignOutFail() {
-        showOKAlert(vc: self, title: "로그아웃 실패", message: "에러가 발생하였습니다.")
-        hideUserView()
-    }
-    
 }

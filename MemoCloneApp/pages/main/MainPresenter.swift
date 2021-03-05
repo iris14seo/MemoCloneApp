@@ -13,58 +13,33 @@
 import UIKit
 
 protocol MainPresentationLogic {
-    func presentMainPage(response: Main.앱진입.Response)
-    func presentRegisterSuccess(response: Main.회원가입.Response)
-    func presentRegisterFail()
-    func presentSignInSuccess(response: Main.로그인.Response)
-    func presentSignInFail()
-    func presentSignOutSuccess()
-    func presentSignOutFail()
+    func presentAutoSignIn(response: Main.앱진입.Response)
+    func presentSignIn(response: Main.로그인.Response)
+    func presentSignOut(response: Main.로그아웃.Response)
+    func presentRegister(response: Main.회원가입.Response)
 }
 
 class MainPresenter: MainPresentationLogic {
     weak var viewController: MainDisplayLogic?
     
     // MARK: Do something
-    
-    func presentMainPage(response: Main.앱진입.Response)   {
-        var viewModel = Main.앱진입.ViewModel()
-        viewModel.isFirstLaunch = response.isFirstLaunch
-        viewModel.isAutoSinInSuccess = response.isAutoSinInSuccess
-        viewModel.currentUserId = response.currentUserId
-        
-        viewController?.displayStartPage(viewModel: viewModel)
+    func presentAutoSignIn(response: Main.앱진입.Response) {
+        let viewModel = Main.앱진입.ViewModel.init(autoSign: Main.SignInStatus.init(status: response.autoSign.status, currentUserId: response.autoSign.currentUserId))
+        viewController?.displayAutoSignIn(viewModel: viewModel)
     }
     
-    func presentRegisterSuccess(response: Main.회원가입.Response) {
-        var viewModel = Main.회원가입.ViewModel()
-        viewModel.hasCurrentUser = response.hasCurrentUser
-        viewModel.currentUserId = response.currentUserId
-        
-        viewController?.displayRegisterSuccess(viewModel: viewModel)
+    func presentSignIn(response: Main.로그인.Response) {
+        let viewModel = Main.로그인.ViewModel(signIn: response.signIn)
+        viewController?.displaySignIn(viewModel: viewModel)
     }
     
-    func presentRegisterFail() {
-        viewController?.displayRegisterFail()
+    func presentSignOut(response: Main.로그아웃.Response) {
+        let viewModel = Main.로그아웃.ViewModel(signOut: response.signOut)
+        viewController?.displaySignOut(viewModel: viewModel)
     }
     
-    func presentSignInSuccess(response: Main.로그인.Response) {
-        var viewModel = Main.로그인.ViewModel()
-        viewModel.currentUserId = response.currentUserId
-        
-        viewController?.displaySignInSuccess(viewModel: viewModel)
+    func presentRegister(response: Main.회원가입.Response) {
+        let viewModel = Main.회원가입.ViewModel(isRegisterSuccess: response.isRegisterSuccess, signIn: response.signIn)
+        viewController?.displayRegister(viewModel: viewModel)
     }
-    
-    func presentSignInFail() {
-        viewController?.displaySignInFail()
-    }
-    
-    func presentSignOutSuccess() {
-        viewController?.displaySignOutSuccess()
-    }
-    
-    func presentSignOutFail() {
-        viewController?.displaySignOutFail()
-    }
-    
 }
