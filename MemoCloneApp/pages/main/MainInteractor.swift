@@ -24,12 +24,13 @@ protocol MainBusinessLogic {
 }
 
 protocol MainDataStore {
-    //var name: String { get set }
+    var uid: String? { get set } // current user uid
 }
 
 class MainInteractor: MainBusinessLogic, MainDataStore {
     var presenter: MainPresentationLogic?
     var worker = MainWorker()
+    var uid: String?
     
     //let disposeBag = DisposeBag() //MARK: 나중에 회원가입쪽 flatMap으로 바꾸기
     
@@ -39,6 +40,8 @@ class MainInteractor: MainBusinessLogic, MainDataStore {
         worker.requestAutoSignIn() {(user: User?, error: CustomError?) -> Void in
             //자동 로그인
             if let user = user {
+                self.uid = user.uid
+                
                 // -성공
                 self.presenter?.presentAutoSignIn(response: Main.앱진입.Response.init(autoSign: Main.SignInStatus.init(status: true, currentUserId: user.email)))
             } else {
@@ -64,6 +67,8 @@ class MainInteractor: MainBusinessLogic, MainDataStore {
             //자동 로그인
             self.worker.requestAutoSignIn() {(user: User?, error: CustomError?) -> Void in
                 if let user = user {
+                    self.uid = user.uid
+                    
                     self.presenter?.presentRegister(response: .init(isRegisterSuccess: true, signIn: Main.SignInStatus.init(status: true, currentUserId: user.email)))
                 } else {
                     self.presenter?.presentRegister(response: .init(isRegisterSuccess: true))
@@ -87,6 +92,8 @@ class MainInteractor: MainBusinessLogic, MainDataStore {
             }
             
             // -성공
+            self.uid = user.uid
+            
             response.signIn = Main.SignInStatus(status: true, currentUserId: user.email)
             self.presenter?.presentSignIn(response: response)
         })
@@ -97,6 +104,8 @@ class MainInteractor: MainBusinessLogic, MainDataStore {
             //로그아웃
             if isSignOuted {
                 // -성공
+                self.uid = nil
+                
                 self.presenter?.presentSignOut(response: Main.로그아웃.Response.init(signOut: true))
             } else {
                 // -실패

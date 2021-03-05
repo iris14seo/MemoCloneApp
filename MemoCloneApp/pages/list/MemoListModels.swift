@@ -13,14 +13,47 @@
 import UIKit
 
 enum MemoList {
-  // MARK: Use cases
-  
-  enum Something {
-    struct Request {
+    // MARK: Use cases
+    enum MemoDataStatus {
+        case 고정
+        case 비고정
     }
-    struct Response {
+    
+    enum 조회 {
+        struct Request {
+        }
+        struct Response {
+            var memoArray: [MemoData]?
+        }
+        struct ViewModel {
+            var memoArray: [MemoData]?
+        }
     }
-    struct ViewModel {
+    
+    enum 삭제 {
+        struct Request {
+            var key: String?
+        }
+        struct Response {
+            var isDeleteSuccess: Bool
+        }
+        struct ViewModel {
+            var isDeleteSuccess: Bool
+        }
     }
-  }
+    
+    enum 고정상태_수정 {
+        struct Request {
+            var key: String?
+            var isFixed: Bool
+        }
+        struct Response {
+            var isChangeSuccess: Bool
+            var toStatus: MemoDataStatus
+        }
+        struct ViewModel {
+            var isChangeSuccess: Bool
+            var toStatus: MemoDataStatus
+        }
+    }
 }

@@ -13,12 +13,9 @@
 import UIKit
 
 protocol MemoListDisplayLogic: class {
-    func displayMemoListSuccess(viewModel: [MemoData]?)
-    func displayMemoListFail()
-    func displayDeleteSuccess()
-    func displayDeleteFail()
-    func displayChangeIsFixedSuccess()
-    func displayChangeIsFixedFail()
+    func displayMemoList(viewModel: MemoList.조회.ViewModel)
+    func displayDeleteMemo(viewModel: MemoList.삭제.ViewModel)
+    func displayChangeFixStatus(viewModel: MemoList.고정상태_수정.ViewModel)
 }
 
 typealias MemoListPage = MemoListViewController
@@ -29,13 +26,15 @@ class MemoListViewController: UIViewController, MemoListDisplayLogic {
     // MARK: Object lifecycle
     
     // section data
-    let totalSectionCount = 2
+    let totalSectionCount = 2 //고정, 비고정 섹터
     var isFixedMemoFolded: Bool = false
     
     // data
     var totalMemoArray = [MemoData]()
     var fixedMemoArray = [MemoData]()
     var nonFixedMemoArray = [MemoData]()
+    
+    var selecteMemoKey: String?
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -61,7 +60,7 @@ class MemoListViewController: UIViewController, MemoListDisplayLogic {
         router.viewController = viewController
         router.dataStore = interactor
     }
-   
+    
     
     // MARK: View lifecycle
     @IBOutlet weak var listTableView: UITableView!
@@ -72,7 +71,7 @@ class MemoListViewController: UIViewController, MemoListDisplayLogic {
     
     let paddig: CGFloat = 20
     let headerViewHeight : CGFloat = 60
-        
+    
     let sectionReuseIdentifier: String = "MemoListSectionView"
     let sectionHeight: CGFloat = 45.0
     
@@ -112,7 +111,6 @@ class MemoListViewController: UIViewController, MemoListDisplayLogic {
             
             $0.delegate = self
             $0.dataSource = self
-            //$0.addInteraction(UIContextMenuInteraction(delegate: self))
             
             $0.backgroundColor = .clear
             $0.separatorStyle = .singleLine
@@ -120,10 +118,9 @@ class MemoListViewController: UIViewController, MemoListDisplayLogic {
             $0.showsHorizontalScrollIndicator = false
         }
     }
-   
+    
     @IBAction func handleWrtieDownBTNTap(_ sender: Any) {
-        let destinationVc = MemoDetailViewController()
-        self.navigationController?.pushViewController(destinationVc, animated: true)
+        self.router?.routeToMemoDetailPage()
     }
     
     private func requestMemoList() {
@@ -136,7 +133,7 @@ class MemoListViewController: UIViewController, MemoListDisplayLogic {
     }
     
     private func changeMemoIsFixedStatus(key: String?, to fix: Bool) {
-        self.interactor?.changeMemoStatus(key: key, isFixed: fix)
+        self.interactor?.changeMemoFixStatus(key: key, isFixed: fix)
     }
     
     private func deleteMemo(key: String?) {
@@ -144,45 +141,41 @@ class MemoListViewController: UIViewController, MemoListDisplayLogic {
     }
     
     // MARK: Do something
-    
-    func displayMemoListSuccess(viewModel: [MemoData]?) {
-        guard let vmDataList = viewModel else {
-            print("저장된 메모 없음")
+    func displayMemoList(viewModel: MemoList.조회.ViewModel) {
+        guard let memoDataArray = viewModel.memoArray else {
+            showOKAlert(vc: self, title: "메모 불러오기 실패", message: "에러가 발생하였습니다.") //MARK: error 분기치기(데이터 없음 vs 데이터 조회 실패)
             return
         }
         
         //update data
-        updateMemoDataList(vmDataList: vmDataList)
-        updateBottomCountText(totalCount: vmDataList.count)
+        updateMemoDataList(vmDataList: memoDataArray)
+        updateBottomCountText(totalCount: memoDataArray.count)
         
         //update view
         listTableView.reloadData()
     }
     
-    func displayMemoListFail() {
-        showOKAlert(vc: self, title: "메모 불러오기 실패", message: "에러가 발생하였습니다.")
-    }
-    
-    func displayDeleteSuccess() {
-        let okAction = UIAlertAction(title: "OK", style: .default) { (action) in
-            self.requestMemoList()
+    func displayDeleteMemo(viewModel: MemoList.삭제.ViewModel) {
+        if viewModel.isDeleteSuccess {
+            let okAction = UIAlertAction(title: "OK", style: .default) { (action) in
+                self.requestMemoList()
+            }
+            showOKAlert(vc: self, title: "메모 삭제 성공", message: "정상적으로 삭제되었습니다.", okAction: okAction)
+        } else {
+            showOKAlert(vc: self, title: "메모 삭제 실패", message: "에러가 발생하였습니다.")
         }
-        showOKAlert(vc: self, title: "메모 삭제 성공", message: "정상적으로 삭제되었습니다.", okAction: okAction)
     }
     
-    func displayDeleteFail() {
-        showOKAlert(vc: self, title: "메모 삭제 실패", message: "에러가 발생하였습니다.")
-    }
-    
-    func displayChangeIsFixedSuccess() {
-        let okAction = UIAlertAction(title: "OK", style: .default) { (action) in
-            self.requestMemoList()
+    func displayChangeFixStatus(viewModel: MemoList.고정상태_수정.ViewModel) {
+        let toStatus = viewModel.toStatus == .고정 ? "고정" : "고정해제"
+        if viewModel.isChangeSuccess {
+            let okAction = UIAlertAction(title: "OK", style: .default) { (action) in
+                self.requestMemoList()
+            }
+            showOKAlert(vc: self, title: "메모 \(toStatus) 성공", message: "정상적으로 \(toStatus) 되었습니다.", okAction: okAction)
+        } else {
+            showOKAlert(vc: self, title: toStatus, message: "에러가 발생하였습니다.")
         }
-        showOKAlert(vc: self, title: "메모 고정/비고정 성공", message: "정상적으로 고정/비고정 되었습니다.", okAction: okAction)
-    }
-    
-    func displayChangeIsFixedFail() {
-        showOKAlert(vc: self, title: "메모 고정/비고정 실패", message: "에러가 발생하였습니다.")
     }
     
     private func updateMemoDataList(vmDataList: [MemoData]) {
@@ -247,7 +240,7 @@ extension MemoListViewController : UITableViewDataSource {
     // SECTION
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = tableView.dequeueReusableHeaderFooterView(withIdentifier: sectionReuseIdentifier) as! MemoListSectionView
-
+        
         if isFixedSection(section: section) {
             view.updateSectionData(style: MemoListSectionStyle.FixVersion, isFolded: isFixedMemoFolded)
         } else {
@@ -258,10 +251,10 @@ extension MemoListViewController : UITableViewDataSource {
         
         return view
     }
-        
+    
     // CELL
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-       
+        
         // - empty
         guard totalMemoArray.count > 0 else {
             return UITableViewCell()
@@ -284,6 +277,13 @@ extension MemoListViewController : UITableViewDataSource {
     
 }
 
+extension MemoListViewController: MemoListSectionCellDelegate {
+    func handleFoldAndStretchButtonTap(isFolded: Bool) {
+        self.isFixedMemoFolded = isFolded
+        self.listTableView.reloadSections(IndexSet.init(integer: 0), with: .fade)
+    }
+}
+
 extension MemoListViewController : UITableViewDelegate {
     // HEADER
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -298,7 +298,7 @@ extension MemoListViewController : UITableViewDelegate {
     // CELL
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if isFixedMemoFolded && isFixedSection(section: indexPath.section) {
-             return 0
+            return 0
         } else {
             return cellHeight
         }
@@ -318,13 +318,13 @@ extension MemoListViewController : UITableViewDelegate {
             return
         }
         
-        let destinationVc = MemoDetailViewController(data: dataArray[indexPath.row])
-        self.navigationController?.pushViewController(destinationVc, animated: true)
+        self.selecteMemoKey = dataArray[indexPath.row].key
+        self.router?.routeToMemoDetailPage()
     }
     
     // CELL
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        //print("contextMenuConfigurationForRowAt section:", indexPath.section, ", cell:", indexPath.row, ", point:", point)
+        
         let isFixedSection = self.isFixedSection(section: indexPath.section)
         let fixImage = isFixedSection ? UIImage(systemName: "pin.slash") : UIImage(systemName: "pin")
         
@@ -334,22 +334,22 @@ extension MemoListViewController : UITableViewDelegate {
         guard dataArray.count > indexPath.row else {
             return nil
         }
-                
+        
         let actionProvider: UIContextMenuActionProvider = { _ in
-                return UIMenu(children: [
-                    UIAction(title: "메모 고정", image: fixImage) { _ in
-                        print("메모 고정 하기")
-                        self.changeMemoIsFixedStatus(key: memoData.key, to: !isFixedSection)
-                    },
-                    UIAction(title: "메모 삭제", image: UIImage(systemName: "trash"), attributes: UIMenuElement.Attributes.destructive) { _ in
-                        print("메모 삭제 하기")
-                        self.deleteMemo(key: memoData.key)
-                    }
-                ])
-            }
-            return UIContextMenuConfiguration(identifier: indexPath as NSCopying,
-                                               previewProvider: nil,
-                                               actionProvider: actionProvider)
+            return UIMenu(children: [
+                UIAction(title: "메모 고정", image: fixImage) { _ in
+                    print("메모 고정 하기")
+                    self.changeMemoIsFixedStatus(key: memoData.key, to: !isFixedSection)
+                },
+                UIAction(title: "메모 삭제", image: UIImage(systemName: "trash"), attributes: UIMenuElement.Attributes.destructive) { _ in
+                    print("메모 삭제 하기")
+                    self.deleteMemo(key: memoData.key)
+                }
+            ])
+        }
+        return UIContextMenuConfiguration(identifier: indexPath as NSCopying,
+                                          previewProvider: nil,
+                                          actionProvider: actionProvider)
     }
     
     // CELL swipe action
@@ -375,7 +375,7 @@ extension MemoListViewController : UITableViewDelegate {
         
         return swipeActions
     }
-
+    
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt: IndexPath) -> UISwipeActionsConfiguration? { // 셀에서 스와이프에 의해 생성되는 메뉴를 셀의 뒤에 보여준다
         let isFixedSection = self.isFixedSection(section: trailingSwipeActionsConfigurationForRowAt.section)
         let dataArray = isFixedSection ? fixedMemoArray : nonFixedMemoArray
@@ -407,9 +407,9 @@ extension MemoListViewController : UITableViewDelegate {
             return
         }
         
-        let destinationVc = MemoDetailViewController(data: dataArray[indexPath.row])
         animator.addAnimations {
-            self.navigationController?.pushViewController(destinationVc, animated: true)
+            self.selecteMemoKey = dataArray[indexPath.row].key
+            self.router?.routeToMemoDetailPage()
         }
     }
     
@@ -424,13 +424,6 @@ extension MemoListViewController : UITableViewDelegate {
     }
 }
 
-extension MemoListViewController: MemoListSectionCellDelegate {
-    func handleFoldAndStretchButtonTap(isFolded: Bool) {
-        self.isFixedMemoFolded = isFolded
-        self.listTableView.reloadSections(IndexSet.init(integer: 0), with: .fade)
-    }
-}
-
 extension MemoListViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         //print("scrolled y:",scrollView.contentOffset.y)
@@ -439,7 +432,7 @@ extension MemoListViewController: UIScrollViewDelegate {
             //네비게이션 바 이름 지우기
             hideNavigationBarTitle(navigationItem: self.navigationItem, navigationController: self.navigationController)
         } else {
-           //네비게이션 바 이름 쓰기
+            //네비게이션 바 이름 쓰기
             showNavigationBarTitle(navigationItem: self.navigationItem, navigationController: self.navigationController)
         }
     }

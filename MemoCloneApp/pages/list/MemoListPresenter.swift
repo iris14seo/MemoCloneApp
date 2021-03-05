@@ -13,46 +13,25 @@
 import UIKit
 
 protocol MemoListPresentationLogic {
-    func presentMemoListSuccess(response: [MemoData]?) //MARK: 임시
-    func presentMemoListFail()
-    
-    func presentDeleteSuccess()
-    func presentDeleteFail()
-    
-    func presentChangeIsFixedSuccess()
-    func presentChangeIsFixedFail()
+    func presentMemoList(response: MemoList.조회.Response)
+    func presentDelete(response: MemoList.삭제.Response)
+    func presentChangeFixStatus(response: MemoList.고정상태_수정.Response)
 }
 
 class MemoListPresenter: MemoListPresentationLogic {
-  weak var viewController: MemoListDisplayLogic?
-  
-  // MARK: Do something
-  
-    func presentMemoListSuccess(response: [MemoData]?) {
-        let viewModel = response?.sorted(by: {
-            $0.updatedDate ?? Date() < $1.updatedDate ?? Date()
-        })
-        
-        viewController?.displayMemoListSuccess(viewModel: viewModel)
+    weak var viewController: MemoListDisplayLogic?
+    
+    // MARK: Do something
+    
+    func presentMemoList(response: MemoList.조회.Response) {
+        viewController?.displayMemoList(viewModel: MemoList.조회.ViewModel(memoArray: response.memoArray))
     }
     
-    func presentMemoListFail() {
-        viewController?.displayMemoListFail()
+    func presentDelete(response: MemoList.삭제.Response) {
+            viewController?.displayDeleteMemo(viewModel: MemoList.삭제.ViewModel(isDeleteSuccess: response.isDeleteSuccess))
     }
     
-    func presentDeleteSuccess() {
-        viewController?.displayDeleteSuccess()
-    }
-    
-    func presentDeleteFail() {
-        viewController?.displayDeleteFail()
-    }
-    
-    func presentChangeIsFixedSuccess() {
-        viewController?.displayChangeIsFixedSuccess()
-    }
-    
-    func presentChangeIsFixedFail() {
-        viewController?.displayChangeIsFixedFail()
+    func presentChangeFixStatus(response: MemoList.고정상태_수정.Response) {
+        viewController?.displayChangeFixStatus(viewModel: MemoList.고정상태_수정.ViewModel(isChangeSuccess: response.isChangeSuccess, toStatus: response.toStatus))
     }
 }

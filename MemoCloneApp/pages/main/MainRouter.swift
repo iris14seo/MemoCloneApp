@@ -27,9 +27,19 @@ class MainRouter: NSObject, MainRoutingLogic, MainDataPassing {
     // MARK: Routing
     func routeToMemoListPage() {
         print("Memo List 페이지로 이동")
-        
         let destinationVC = MemoListPage()
-        
-        viewController?.navigationController?.pushViewController(destinationVC, animated: true)
+        var destinationDS = destinationVC.router!.dataStore!
+        passUserDataToList(source: dataStore!, destination: &destinationDS)
+        navigateToList(source: viewController!, destination: destinationVC)
+    }
+    
+    // MARK: Navigation
+    func navigateToList(source: MainPage, destination: MemoListPage) {
+        source.navigationController?.pushViewController(destination, animated: true)
+    }
+    
+    // MARK: Passing data
+    func passUserDataToList(source: MainDataStore, destination: inout MemoListDataStore) {
+        destination.uid = source.uid
     }
 }

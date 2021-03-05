@@ -13,44 +13,44 @@
 import UIKit
 
 @objc protocol MemoListRoutingLogic {
+    func routeToMemoDetailPage()
+    //MARK: 매개변수(_ memoData: MemoData?)
+    // -> [에러] @objc protocol protocol + method cannot be a memober
+    //func routeToMemoDetailPage(_ memoData: Any?) //func routeToMemoDetailPage(_ memoData: NSObject?)
+    // -> [참고] @objc protocol: https://zeddios.tistory.com/347
 }
 
 protocol MemoListDataPassing {
-  var dataStore: MemoListDataStore? { get }
+    var dataStore: MemoListDataStore? { get }
 }
 
 class MemoListRouter: NSObject, MemoListRoutingLogic, MemoListDataPassing {
-  weak var viewController: MemoListViewController?
-  var dataStore: MemoListDataStore?
-  
-  // MARK: Routing
-  
-  //func routeToSomewhere(segue: UIStoryboardSegue?)
-  //{
-  //  if let segue = segue {
-  //    let destinationVC = segue.destination as! SomewhereViewController
-  //    var destinationDS = destinationVC.router!.dataStore!
-  //    passDataToSomewhere(source: dataStore!, destination: &destinationDS)
-  //  } else {
-  //    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-  //    let destinationVC = storyboard.instantiateViewController(withIdentifier: "SomewhereViewController") as! SomewhereViewController
-  //    var destinationDS = destinationVC.router!.dataStore!
-  //    passDataToSomewhere(source: dataStore!, destination: &destinationDS)
-  //    navigateToSomewhere(source: viewController!, destination: destinationVC)
-  //  }
-  //}
-
-  // MARK: Navigation
-  
-  //func navigateToSomewhere(source: MemoListViewController, destination: SomewhereViewController)
-  //{
-  //  source.show(destination, sender: nil)
-  //}
-  
-  // MARK: Passing data
-  
-  //func passDataToSomewhere(source: MemoListDataStore, destination: inout SomewhereDataStore)
-  //{
-  //  destination.name = source.name
-  //}
+    weak var viewController: MemoListViewController?
+    var dataStore: MemoListDataStore?
+    
+    // MARK: Routing
+    func routeToMemoDetailPage() {
+        print("Memo Detail 페이지로 이동")
+        
+        let destinationVC = MemoDetailPage()
+        var destinationDS = destinationVC.router!.dataStore!
+        passMemoDataToDetail(source: dataStore!, destination: &destinationDS)
+        navigateToDetail(source: viewController!, destination: destinationVC)
+    }
+    
+    // MARK: Navigation
+    func navigateToDetail(source: MemoListPage, destination: MemoDetailPage) {
+        source.navigationController?.pushViewController(destination, animated: true)
+    }
+    
+    // MARK: Passing data
+    func passMemoDataToDetail(source: MemoListDataStore, destination: inout MemoDetailDataStore) {
+        guard let key = viewController?.selecteMemoKey else { //MARK: 데이터 넘기는 다른 방법 찾기
+            return
+        }
+        
+        let memoData = source.memoDataList?.filter({$0.key == key}).first        
+        destination.memoData = memoData
+        destination.uid = source.uid
+    }
 }

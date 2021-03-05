@@ -11,7 +11,156 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseAuth
+import FirebaseDatabase
 
-class MemoListWorker {
-  
+typealias DataSnapshotCompletionHandler = (APIResult<[MemoData]?>) -> Void
+typealias DeleteDataCompletionHandler = (APIResult<Bool>) -> Void
+typealias ChangeDataCompletionHandler = (APIResult<Bool>) -> Void
+
+protocol MemoListProtocol {
+    func requestMemoList(uid: String?, completionHandler: @escaping ([MemoData]?, CustomError?) -> Void)
+    func requestMemoList(uid: String?, completionHandler: @escaping DataSnapshotCompletionHandler)
+    
+    func deleteMemo(uid: String?, key: String?, completionHandler: @escaping (Bool, CustomError?) -> Void)
+    func deleteMemo(uid: String?, key: String?, completionHandler: @escaping DeleteDataCompletionHandler)
+    
+    func changeMemoFixStatus(uid: String?, key: String?, isFixed: Bool, completionHandler: @escaping (Bool, CustomError?) -> Void)
+    func changeMemoFixStatus(uid: String?, key: String?, isFixed: Bool, completionHandler: @escaping ChangeDataCompletionHandler)
+}
+
+class MemoListWorker: MemoListProtocol {
+    private let momoDataNode: String = "user-memo"
+    
+    //MARK: 메모리스트 조회
+    func requestMemoList(uid: String?, completionHandler: @escaping ([MemoData]?, CustomError?) -> Void) {
+        guard let uid = uid else {
+            return
+        }
+        
+        let ref = Database.database().reference().child(momoDataNode).child(uid)
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            //메모조회
+            if let dictionary = snapshot.value as? [String: AnyObject] {
+                // -성공
+                var memoArray = [MemoData]()
+                for data in dictionary {
+                    let value = data.value
+                    var formedData = MemoData(dictionary: value as! [String : Any])
+                    formedData.key = data.key
+                    memoArray.append(formedData)
+                }
+                
+                completionHandler(memoArray, nil)
+            } else {
+                // -데이터 없음
+                completionHandler(nil, CustomError(errorCode: "5", errorMsg: "메모가 없습니다."))
+            }
+            
+        }, withCancel: {(error) in
+            // -실패
+            completionHandler(nil, CustomError(errorCode: "6", errorMsg: "메모 조회 실패"))
+        })
+    }
+    
+    func requestMemoList(uid: String?, completionHandler: @escaping DataSnapshotCompletionHandler) {
+        guard let uid = uid else {
+            return
+        }
+        
+        let ref = Database.database().reference().child(momoDataNode).child(uid)
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            //메모조회
+            if let dictionary = snapshot.value as? [String: AnyObject] {
+                // -성공
+                var memoArray = [MemoData]()
+                for data in dictionary {
+                    let value = data.value
+                    var formedData = MemoData(dictionary: value as! [String : Any])
+                    formedData.key = data.key
+                    memoArray.append(formedData)
+                }
+                
+                completionHandler(APIResult.Success(result: memoArray))
+            } else {
+                // -데이터 없음
+                completionHandler(APIResult.Failure(error: CustomError(errorCode: "5", errorMsg: "메모가 없습니다.")))
+            }
+            
+        }, withCancel: {(error) in
+            // -실패
+            completionHandler(APIResult.Failure(error: CustomError(errorCode: "6", errorMsg: "메모 조회 실패")))
+        })
+    }
+    
+    //MARK: 메모삭제
+    func deleteMemo(uid: String?, key: String?, completionHandler: @escaping (Bool, CustomError?) -> Void) {
+        guard let uid = uid,
+              let key = key else {
+            print("uid OR key 없음")
+            return
+        }
+        
+        let ref = Database.database().reference().child(momoDataNode).child(uid).child(key)
+        ref.removeValue(completionBlock: { (error, ref) in
+            if let error = error {
+                completionHandler(false, CustomError(errorCode: "7", errorMsg: "\(error.localizedDescription))"))
+            } else {
+                completionHandler(true, nil)
+            }
+        })
+    }
+    
+    func deleteMemo(uid: String?, key: String?, completionHandler: @escaping DeleteDataCompletionHandler) {
+        guard let uid = uid,
+              let key = key else {
+            print("uid OR key 없음")
+            return
+        }
+        
+        let ref = Database.database().reference().child(momoDataNode).child(uid).child(key)
+        ref.removeValue(completionBlock: { (error, ref) in
+            if let error = error {
+                completionHandler(APIResult.Failure(error: CustomError(errorCode: "7", errorMsg: "\(error.localizedDescription))")))
+            } else {
+                completionHandler(APIResult.Success(result: true))
+            }
+        })
+    }
+    
+    //MARK: 메모고정
+    func changeMemoFixStatus(uid: String?, key: String?, isFixed: Bool, completionHandler: @escaping (Bool, CustomError?) -> Void) {
+        guard let uid = uid,
+              let key = key else {
+            print("uid OR key 없음")
+            return
+        }
+        
+        let ref  = Database.database().reference().child(momoDataNode).child(uid).child(key)
+        ref.updateChildValues(["isFixed": isFixed], withCompletionBlock: {(error, ref) in
+            if let error = error {
+                completionHandler(false, CustomError(errorCode: "8", errorMsg: "\(error.localizedDescription))"))
+            } else {
+                completionHandler(true, nil)
+            }
+        })
+    }
+    
+    func changeMemoFixStatus(uid: String?, key: String?, isFixed: Bool, completionHandler: @escaping ChangeDataCompletionHandler) {
+        guard let uid = uid,
+              let key = key else {
+            print("uid OR key 없음")
+            return
+        }
+        
+        let ref  = Database.database().reference().child(momoDataNode).child(uid).child(key)
+        ref.updateChildValues(["isFixed": isFixed], withCompletionBlock: {(error, ref) in
+            if let error = error {
+                completionHandler(APIResult.Failure(error: CustomError(errorCode: "8", errorMsg: "\(error.localizedDescription))")))
+            } else {
+                completionHandler(APIResult.Success(result: true))
+            }
+        })
+    }
 }

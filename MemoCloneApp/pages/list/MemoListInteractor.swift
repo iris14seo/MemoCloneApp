@@ -12,76 +12,58 @@
 
 import UIKit
 import Firebase
+import FirebaseAuth
+import FirebaseDatabase
 
 protocol MemoListBusinessLogic {
     func requestMemoList()
     func deleteMemo(key: String?)
-    func changeMemoStatus(key: String?, isFixed: Bool)
+    func changeMemoFixStatus(key: String?, isFixed: Bool)
 }
 
 protocol MemoListDataStore {
+    var uid: String? { get set }
+    var memoDataList: [MemoData]? { get set }
 }
 
 class MemoListInteractor: MemoListBusinessLogic, MemoListDataStore {
     var presenter: MemoListPresentationLogic?
-    var worker: MemoListWorker?
+    var worker = MemoListWorker()
+    var uid: String?
+    var memoDataList: [MemoData]?
     
     // MARK: Do something
     
     func requestMemoList() {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
-        
-        let ref = Database.database().reference().child("user-memo").child(uid)
-        ref.observeSingleEvent(of: .value, with: { (snapshot) in
-            
-            if let dictionary = snapshot.value as? [String: AnyObject] {
-                print("메모 조회 성꽁")
-
-                var memoArray = [MemoData]()
-                for data in dictionary {
-                    let value = data.value
-                    var formedData = MemoData(dictionary: value as! [String : Any])
-                    formedData.key = data.key
-                    memoArray.append(formedData)
-                }
-                
-                self.presenter?.presentMemoListSuccess(response: memoArray)
-                
+        worker.requestMemoList(uid: self.uid, completionHandler: {(memoArray, error) in
+            if error != nil {
+                self.presenter?.presentMemoList(response: .init())
             } else {
-                print("메모 조회 실패: 저장된 메모 리스트 없음")
+                let sortedMemoArray = memoArray?.sorted(by: {
+                    $0.updatedDate ?? Date() < $1.updatedDate ?? Date()
+                })
+                self.memoDataList = sortedMemoArray
+                self.presenter?.presentMemoList(response: MemoList.조회.Response(memoArray: sortedMemoArray))
             }
-                        
-        }, withCancel: nil)
+        })
     }
     
     func deleteMemo(key: String?) {
-        guard let uid = Auth.auth().currentUser?.uid,
-              let key = key else {
-            print("uid OR key 없음")
-            return
-        }
-        
-        let ref = Database.database().reference().child("user-memo").child(uid).child(key)
-        ref.removeValue()
-        
-        self.presenter?.presentDeleteSuccess()
-        
-        //MARK: 참고(파이어베이스 - 특정 데이터값 삭제)
+        worker.deleteMemo(uid: self.uid, key: key, completionHandler: { (isDeleted, error) in
+            self.presenter?.presentDelete(response: MemoList.삭제.Response(isDeleteSuccess: isDeleted))
+        })
     }
     
-    func changeMemoStatus(key: String?, isFixed: Bool) {
-        guard let uid = Auth.auth().currentUser?.uid,
-              let key = key else {
-            print("uid OR key 없음")
-            return
-        }
-        
-        let ref  = Database.database().reference().child("user-memo").child(uid).child(key)
-        ref.updateChildValues(["isFixed": isFixed])
-        self.presenter?.presentChangeIsFixedSuccess()
-        
-        //MARK: 참고(파이어베이스 - 특정 데이터만 수정하기) https://pythonq.com/so/ios/1966026
+    func changeMemoFixStatus(key: String?, isFixed: Bool) {
+        worker.changeMemoFixStatus(uid: self.uid, key: key, isFixed: isFixed, completionHandler: { (isChanged, error) in
+            if isChanged {
+                let memoStatus = isFixed ? MemoList.MemoDataStatus.고정: .비고정
+                self.presenter?.presentChangeFixStatus(response: MemoList.고정상태_수정.Response(isChangeSuccess: isChanged, toStatus: memoStatus))
+            } else {
+                let memoStatus = isFixed ? MemoList.MemoDataStatus.비고정: .고정
+                self.presenter?.presentChangeFixStatus(response: MemoList.고정상태_수정.Response(isChangeSuccess: isChanged, toStatus: memoStatus))
+            }
+            
+        })
     }
 }
