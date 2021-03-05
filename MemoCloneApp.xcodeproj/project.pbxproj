@@ -17,8 +17,6 @@
 		BB0A29AE25E3FDC700361DCD /* MainModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0A29A825E3FDC700361DCD /* MainModels.swift */; };
 		BB0A29AF25E3FDC700361DCD /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0A29A925E3FDC700361DCD /* MainViewController.swift */; };
 		BB0A29B025E3FDC700361DCD /* MainInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0A29AA25E3FDC700361DCD /* MainInteractor.swift */; };
-		BB0A29C425E40B9800361DCD /* IntroGuideViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0A29BE25E40B9800361DCD /* IntroGuideViewController.swift */; };
-		BB0A29CA25E40BBA00361DCD /* IntroGuideViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB0A29C925E40BBA00361DCD /* IntroGuideViewController.xib */; };
 		BB15A73825EA1EF0006CF9B1 /* CALayer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB15A73725EA1EF0006CF9B1 /* CALayer+Extension.swift */; };
 		BB15A73D25EA1F20006CF9B1 /* TabBar+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB15A73C25EA1F20006CF9B1 /* TabBar+Extension.swift */; };
 		BB15A74225EA2325006CF9B1 /* Image+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB15A74125EA2325006CF9B1 /* Image+Extension.swift */; };
@@ -92,8 +90,6 @@
 		BB0A29A825E3FDC700361DCD /* MainModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainModels.swift; sourceTree = "<group>"; };
 		BB0A29A925E3FDC700361DCD /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		BB0A29AA25E3FDC700361DCD /* MainInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainInteractor.swift; sourceTree = "<group>"; };
-		BB0A29BE25E40B9800361DCD /* IntroGuideViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroGuideViewController.swift; sourceTree = "<group>"; };
-		BB0A29C925E40BBA00361DCD /* IntroGuideViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = IntroGuideViewController.xib; sourceTree = "<group>"; };
 		BB15A73725EA1EF0006CF9B1 /* CALayer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CALayer+Extension.swift"; sourceTree = "<group>"; };
 		BB15A73C25EA1F20006CF9B1 /* TabBar+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TabBar+Extension.swift"; sourceTree = "<group>"; };
 		BB15A74125EA2325006CF9B1 /* Image+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+Extension.swift"; sourceTree = "<group>"; };
@@ -206,15 +202,6 @@
 			path = main;
 			sourceTree = "<group>";
 		};
-		BB0A299825E3FAA500361DCD /* intro */ = {
-			isa = PBXGroup;
-			children = (
-				BB0A29BE25E40B9800361DCD /* IntroGuideViewController.swift */,
-				BB0A29C925E40BBA00361DCD /* IntroGuideViewController.xib */,
-			);
-			path = intro;
-			sourceTree = "<group>";
-		};
 		BB15A74625EA2376006CF9B1 /* cell */ = {
 			isa = PBXGroup;
 			children = (
@@ -298,7 +285,6 @@
 			isa = PBXGroup;
 			children = (
 				BB8AF71F25E66B8200DD9ED2 /* splash */,
-				BB0A299825E3FAA500361DCD /* intro */,
 				BB0A299725E3FA9700361DCD /* main */,
 				BB54D67125D15B6200407E30 /* list */,
 				BB54D68125D15C0900407E30 /* detail */,
@@ -481,7 +467,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB0A29CA25E40BBA00361DCD /* IntroGuideViewController.xib in Resources */,
 				BB8AF72325E6A32300DD9ED2 /* SplashViewController.xib in Resources */,
 				BB15A75125EA23C0006CF9B1 /* MemoListSectionView.xib in Resources */,
 				BB15A77E25EA7824006CF9B1 /* MemoListHeaderView.xib in Resources */,
@@ -623,7 +608,6 @@
 				BB54D68925D15C2C00407E30 /* MemoDetailWorker.swift in Sources */,
 				BB54D67D25D15B9900407E30 /* MemoListInteractor.swift in Sources */,
 				BB15A74925EA2398006CF9B1 /* MemoListContentCell.swift in Sources */,
-				BB0A29C425E40B9800361DCD /* IntroGuideViewController.swift in Sources */,
 				BB0A29AE25E3FDC700361DCD /* MainModels.swift in Sources */,
 				BBE3675625ED01A700168F79 /* CommonModel.swift in Sources */,
 				BBE366EF25ECC38300168F79 /* TextField+Extension.swift in Sources */,
