@@ -43,7 +43,7 @@ class MemoDetailInteractor: MemoDetailBusinessLogic, MemoDetailDataStore {
     }
     
     func requestSaveMemoData(request: MemoDetail.저장.Request, key: String? = nil) {
-        worker.saveMemo(uid: self.uid, memoData: request.memoData, key: key, completionHandler: {(ref, error) in
+        worker.saveMemo(uid: self.uid, memoData: request.memoData, key: key, completionHandler: {(result, error) in
             if error != nil {
                 self.presenter?.presentSave(response: .init(isSaveSuccess: false))
             } else {

@@ -15,14 +15,14 @@ import Firebase
 import FirebaseAuth
 import FirebaseDatabase
 
-typealias SaveMemoCompletionHandler = (APIResult<DatabaseReference?>) -> Void
+typealias SaveMemoCompletionHandler = (APIResult<String?>) -> Void
 protocol MemoDetailProtocol {
-    func saveMemo(uid: String?, memoData: MemoDetail.WrittenMemoData?, key: String?, completionHandler: @escaping (DatabaseReference?, CustomError?) -> Void)
+    func saveMemo(uid: String?, memoData: MemoDetail.WrittenMemoData?, key: String?, completionHandler: @escaping (String?, CustomError?) -> Void)
     func saveMemo(uid: String?, memoData: MemoDetail.WrittenMemoData?, key: String?,  completionHandler: @escaping SaveMemoCompletionHandler)
 }
 
 extension MemoDetailProtocol {
-    func saveMemo(uid: String?, memoData: MemoDetail.WrittenMemoData?, key: String? = nil, completionHandler: @escaping (DatabaseReference?, CustomError?) -> Void) {
+    func saveMemo(uid: String?, memoData: MemoDetail.WrittenMemoData?, key: String? = nil, completionHandler: @escaping (String?, CustomError?) -> Void) {
         saveMemo(uid: uid, memoData: memoData, key: key, completionHandler: completionHandler)
     }
     
@@ -34,7 +34,7 @@ extension MemoDetailProtocol {
 class MemoDetailWorker: MemoDetailProtocol {
     private let momoDataNode: String = "user-memo"
     
-    func saveMemo(uid: String?, memoData: MemoDetail.WrittenMemoData?, key: String?, completionHandler: @escaping (DatabaseReference?, CustomError?) -> Void) {
+    func saveMemo(uid: String?, memoData: MemoDetail.WrittenMemoData?, key: String?, completionHandler: @escaping (String?, CustomError?) -> Void) {
         guard let uid = uid,
               let memoData = memoData else {
             return
@@ -64,7 +64,7 @@ class MemoDetailWorker: MemoDetailProtocol {
             guard let key = childRef.key else { return }
             print("메모저장 성공: \(key)")
             
-            completionHandler(ref, nil)
+            completionHandler(key, nil)
         }
     }
     
@@ -98,7 +98,7 @@ class MemoDetailWorker: MemoDetailProtocol {
             guard let key = childRef.key else { return }
             print("메모저장 성공: \(key)")
             
-            completionHandler(APIResult.Success(result: ref))
+            completionHandler(APIResult.Success(result: key))
         }
     }
 }
