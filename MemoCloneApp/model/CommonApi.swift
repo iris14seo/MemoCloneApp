@@ -7,6 +7,12 @@
 
 import Foundation
 
+//MARK: Firebase Api
+public enum APIResult<U> {
+    case Success(result: U)
+    case Failure(error: CustomError)
+}
+
 public struct CustomError {
     var errorCode: String?
     var errorMsg: String?
@@ -15,9 +21,4 @@ public struct CustomError {
         self.errorCode = errorCode
         self.errorMsg = errorMsg
     }
-}
-
-public enum APIResult<U> {
-    case Success(result: U)
-    case Failure(error: CustomError)
 }
